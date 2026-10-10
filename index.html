@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>薪火斩 · 不死之夜切果轮回</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#05070d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%2305070d%27/%3E%3Cpath d=%27M50 12C60 32 78 40 74 62C72 78 60 88 50 88C38 88 26 78 26 62C26 46 40 38 42 24C46 28 48 20 50 12Z%27 fill=%27%23ff9a3c%27/%3E%3C/svg%3E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--ember:#ff9a3c;--gold:#e8c872;--bone:#e2dac4;--blood:#b3201f;
+ --serif:"Songti SC","STSong","Noto Serif SC","Noto Serif CJK SC","Source Han Serif SC","SimSun","Songti TC",serif;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#05070d;overscroll-behavior:none;font-family:var(--serif);color:var(--bone);
+ user-select:none;-webkit-user-select:none;touch-action:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#cam{position:fixed;right:10px;bottom:calc(10px + var(--sb));width:78px;height:104px;object-fit:cover;transform:scaleX(-1);border-radius:10px;
+ border:1px solid rgba(232,200,114,.5);opacity:0;pointer-events:none;background:#000;transition:opacity .4s;z-index:3;filter:brightness(.8) contrast(1.1)}
+#cam.on{opacity:.55}
+button{font-family:var(--serif);color:var(--bone);touch-action:manipulation}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;inset:0;pointer-events:none;display:none;z-index:2}
+#hud.show{display:block}
+#hud .b{position:absolute}
+#topL{left:12px;top:calc(10px + var(--st))}
+#hp{display:flex;gap:5px;height:18px;align-items:center}
+.pip{width:15px;height:19px;background:radial-gradient(ellipse at 50% 70%,#ffd27a,#ff7a1c 55%,#a3200a);clip-path:path('M7.5 0C9 5 14 7 13.5 12C13 16.5 10 19 7.5 19C5 19 2 16.5 1.5 12C1.5 8 5 6 5.5 3C6.5 4 7 2 7.5 0Z');filter:drop-shadow(0 0 4px #ff8a2a)}
+.pip.lost{background:#2a2430;filter:none;opacity:.7}
+.pip.shield{background:radial-gradient(ellipse at 50% 70%,#e8f4ff,#7fb8ff 55%,#2b5fa8);filter:drop-shadow(0 0 4px #7fb8ff)}
+#stamW{margin-top:7px;width:150px;height:7px;background:rgba(0,0,0,.55);border:1px solid rgba(232,200,114,.45);border-radius:4px;overflow:hidden}
+#stam{height:100%;width:100%;background:linear-gradient(90deg,#4f8f3a,#c8e060);transition:width .08s}
+#stamW.exh #stam{background:linear-gradient(90deg,#8a2a1a,#d05a2a);animation:blink .35s infinite alternate}
+#topR{right:12px;top:calc(8px + var(--st));text-align:right}
+#souls{font-size:22px;color:var(--gold);text-shadow:0 0 8px rgba(255,170,60,.6),0 2px 3px #000;letter-spacing:1px;line-height:1.1}
+#souls small{font-size:12px;opacity:.8;margin-right:4px}
+#topBtns{margin-top:5px;display:flex;gap:6px;justify-content:flex-end}
+.ib{pointer-events:auto;width:34px;height:30px;border-radius:6px;border:1px solid rgba(232,200,114,.45);background:rgba(8,10,16,.65);font-size:15px;line-height:1;padding:0;color:var(--gold)}
+#floorLine{left:0;right:0;top:calc(56px + var(--st));text-align:center;font-size:13px;letter-spacing:3px;color:rgba(226,218,196,.75);text-shadow:0 1px 3px #000}
+#progW{left:50%;transform:translateX(-50%);top:calc(76px + var(--st));width:56%;height:5px;background:rgba(0,0,0,.55);border:1px solid rgba(232,200,114,.3);border-radius:3px;overflow:hidden}
+#prog{height:100%;width:0;background:linear-gradient(90deg,#a85a1a,#ffcf6a);transition:width .2s}
+#progT{left:0;right:0;top:calc(84px + var(--st));text-align:center;font-size:11px;opacity:.6;letter-spacing:1px}
+#bossW{left:6%;right:6%;top:calc(92px + var(--st));display:none;text-align:center}
+#bossN{font-size:15px;letter-spacing:4px;color:#e8d9b0;text-shadow:0 0 8px rgba(255,80,40,.7),0 2px 3px #000;margin-bottom:3px}
+#bossBar{height:9px;background:rgba(0,0,0,.65);border:1px solid rgba(232,200,114,.55);overflow:hidden;position:relative}
+#bossHp{height:100%;width:100%;background:linear-gradient(90deg,#6e0f12,#c2262a 60%,#ff6a4a);transition:width .12s}
+#bossGhost{position:absolute;left:0;top:0;height:100%;width:100%;background:rgba(255,230,180,.5);transition:width .8s .25s}
+#bossHp{position:relative;z-index:1}
+#combo{left:0;right:0;bottom:calc(112px + var(--sb));text-align:center;font-size:26px;font-weight:800;letter-spacing:3px;color:#ffd890;
+ text-shadow:0 0 12px rgba(255,150,40,.9),0 2px 4px #000;min-height:34px;transition:transform .08s}
+#combo.pop{transform:scale(1.25)}
+#flaskBtn{pointer-events:auto;left:12px;bottom:calc(12px + var(--sb));width:62px;height:74px;border-radius:12px;border:1px solid rgba(232,200,114,.55);
+ background:rgba(8,10,16,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
+#flaskBtn svg{width:30px;height:38px;filter:drop-shadow(0 0 5px rgba(255,150,40,.8))}
+#flaskBtn.dis{opacity:.4}
+#flaskBtn.go{animation:glow 1s infinite alternate}
+#flaskN{font-size:15px;color:var(--gold);margin-top:1px}
+#flaskCap{font-size:10px;opacity:.7;letter-spacing:1px}
+#relicBar{left:84px;right:98px;bottom:calc(16px + var(--sb));display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-content:flex-end}
+.rg{width:22px;height:22px;border-radius:50%;border:1px solid var(--gold);background:rgba(8,10,16,.75);font-size:12px;line-height:20px;text-align:center;color:var(--gold)}
+.rg.r1{border-color:#6fb4ff;color:#9fd0ff}.rg.r2{border-color:#ffb43c;color:#ffd27a;box-shadow:0 0 6px rgba(255,170,60,.8)}
+#pill{left:50%;transform:translateX(-50%);bottom:calc(62px + var(--sb));max-width:84%;text-align:center;font-size:12.5px;line-height:1.5;padding:5px 12px;
+ border-radius:14px;background:rgba(0,0,0,.6);border:1px solid rgba(232,200,114,.3);display:none}
+#curseTag{left:12px;top:calc(54px + var(--st));font-size:11px;color:#c98aff;letter-spacing:1px;display:none}
+
+/* ---------- banner ---------- */
+#banner{position:fixed;left:0;right:0;top:34%;text-align:center;pointer-events:none;z-index:6;opacity:0}
+#banner .t{font-size:44px;font-weight:700;letter-spacing:14px;padding-left:14px;text-shadow:0 0 22px currentColor,0 3px 6px #000}
+#banner .s{margin-top:10px;font-size:15px;letter-spacing:5px;opacity:.85;text-shadow:0 2px 4px #000}
+#banner .line{height:1px;margin:12px auto 0;width:0;background:linear-gradient(90deg,transparent,currentColor,transparent)}
+#banner.show{animation:bn var(--d,2.4s) ease-out forwards}
+#banner.show .line{animation:ln var(--d,2.4s) ease-out forwards}
+#banner.red{color:#c4201f}#banner.gold{color:#e8c872}#banner.boss{color:#e9d9b4}#banner.blue{color:#9fd0ff}
+#banner.boss .t{font-size:34px;letter-spacing:8px}
+@keyframes bn{0%{opacity:0;transform:scale(1.18)}12%{opacity:1;transform:scale(1)}78%{opacity:1}100%{opacity:0;transform:scale(.99)}}
+@keyframes ln{0%{width:0}25%{width:78%}100%{width:90%}}
+@keyframes blink{from{opacity:.55}to{opacity:1}}
+@keyframes glow{from{box-shadow:0 0 4px rgba(255,160,60,.4)}to{box-shadow:0 0 16px rgba(255,160,60,.95)}}
+
+/* ---------- overlays / panels ---------- */
+.ov{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:flex-start;padding:calc(18px + var(--st)) 18px calc(18px + var(--sb));
+ text-align:center;z-index:10;overflow-y:auto;touch-action:pan-y;background:radial-gradient(ellipse at 50% 40%,rgba(10,12,22,.55),rgba(2,3,7,.9))}
+.ov.show{display:flex}
+.ov>:first-child{margin-top:auto}.ov>:last-child{margin-bottom:auto}
+.ov.solid{background:radial-gradient(ellipse at 50% 30%,rgba(14,16,28,.8),rgba(2,3,7,.93))}
+#menu{background:linear-gradient(180deg,rgba(2,3,8,.15) 0%,rgba(2,3,8,.45) 45%,rgba(2,3,8,.72) 100%)}
+h1{margin:0;font-size:78px;font-weight:900;letter-spacing:12px;padding-left:12px;line-height:1.05;color:#f4d9a0;
+ background:linear-gradient(180deg,#fff3cf 0%,#ffbe5a 45%,#c4521a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 0 14px rgba(255,120,30,.55)) drop-shadow(0 3px 4px #000)}
+.sub{margin:6px 0 4px;font-size:14px;letter-spacing:6px;opacity:.8;padding-left:6px}
+.orn{width:200px;height:12px;margin:10px auto;opacity:.8;background:linear-gradient(90deg,transparent,var(--gold),transparent) center/100% 1px no-repeat}
+.orn:after{content:"";display:block;width:8px;height:8px;background:var(--gold);transform:rotate(45deg) translateY(-2px);margin:-4px auto 0}
+.btn{display:block;width:250px;max-width:82vw;margin:7px auto;padding:13px 10px;border:1px solid rgba(232,200,114,.7);border-radius:3px;font-size:19px;letter-spacing:6px;
+ padding-left:16px;color:var(--bone);background:linear-gradient(180deg,rgba(60,38,18,.8),rgba(22,14,10,.85));box-shadow:0 0 14px rgba(255,140,40,.2),inset 0 0 12px rgba(255,160,60,.08);position:relative}
+.btn:active{transform:scale(.97);background:linear-gradient(180deg,rgba(100,60,24,.9),rgba(40,22,12,.9))}
+.btn.alt{font-size:15px;letter-spacing:3px;padding:11px 10px;background:rgba(14,16,26,.7);border-color:rgba(226,218,196,.4);box-shadow:none}
+.btn.big{border-color:#ffcf6a;background:linear-gradient(180deg,rgba(120,64,20,.9),rgba(50,24,10,.92));box-shadow:0 0 22px rgba(255,140,40,.45)}
+.btn.sm{width:auto;display:inline-block;font-size:13px;letter-spacing:2px;padding:8px 16px;margin:5px 4px}
+.btn[disabled],.btn.dis{opacity:.45}
+.btn .tag{position:absolute;right:8px;top:-8px;font-size:10px;letter-spacing:1px;padding:1px 6px;background:#7a1c1c;border:1px solid #d86;color:#fdd;border-radius:2px}
+#menuBest{font-size:12px;opacity:.7;line-height:1.7;margin:10px 0 8px;letter-spacing:1px}
+#startMsg,#ctlMsg{min-height:20px;margin-top:8px;font-size:13px;color:#ffd9a0;max-width:330px;line-height:1.5}
+.small{font-size:11.5px;opacity:.6;margin-top:10px;max-width:320px;line-height:1.6}
+#pTitle{font-size:26px;letter-spacing:8px;padding-left:8px;color:var(--gold);text-shadow:0 0 12px rgba(255,150,40,.5)}
+#pSub{font-size:13px;opacity:.75;margin:6px 0 12px;max-width:340px;line-height:1.6;letter-spacing:1px}
+#pCards{display:flex;flex-direction:column;gap:9px;width:100%;max-width:360px}
+.card{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:11px 12px;border-radius:4px;border:1px solid rgba(226,218,196,.35);
+ background:linear-gradient(90deg,rgba(24,26,40,.92),rgba(12,14,24,.92));position:relative;font-size:14px}
+.card:active{transform:scale(.98)}
+.card.r1{border-color:#5ea6f0;box-shadow:0 0 12px rgba(80,150,240,.3)}
+.card.r2{border-color:#ffb43c;box-shadow:0 0 16px rgba(255,170,60,.45);background:linear-gradient(90deg,rgba(56,34,12,.92),rgba(20,14,12,.92))}
+.card.dis{opacity:.4}
+.card .gl{flex:none;width:46px;height:46px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--gold);
+ background:radial-gradient(circle,rgba(255,160,60,.18),rgba(0,0,0,.3));text-shadow:0 0 8px rgba(255,150,40,.8)}
+.card.r1 .gl{border-color:#6fb4ff;color:#a8d4ff}.card.r2 .gl{border-color:#ffb43c;color:#ffe0a0}
+.card .nm{font-size:17px;letter-spacing:3px;color:#f0e6c8;margin-bottom:3px}
+.card .ds{font-size:12.5px;line-height:1.5;opacity:.8}
+.card .ds b{color:#ffcf6a;font-weight:600}
+.card .rk{position:absolute;right:8px;top:6px;font-size:10px;letter-spacing:2px;opacity:.7}
+.card .pr{position:absolute;right:10px;bottom:7px;font-size:13px;color:var(--gold)}
+.card.sold{opacity:.3;pointer-events:none}
+#pFoot{margin-top:12px}
+#ngRow{font-size:13px;margin:4px 0}
+.rank{font-size:15px;letter-spacing:5px;color:var(--gold);margin:6px 0}
+#overTitle{font-size:54px;font-weight:700;letter-spacing:16px;padding-left:16px;color:#c4201f;text-shadow:0 0 24px rgba(200,30,30,.8),0 3px 6px #000;opacity:0}
+#overTitle.gold{color:var(--gold);text-shadow:0 0 24px rgba(255,170,60,.8),0 3px 6px #000}
+#overTitle.in{animation:fadein 2s ease-out forwards}
+@keyframes fadein{from{opacity:0;letter-spacing:2px}to{opacity:1;letter-spacing:16px}}
+#overInfo{font-size:14.5px;line-height:1.9;margin:6px 0 12px;letter-spacing:1px}
+#overInfo b{color:var(--gold);font-weight:600}
+#finalScore{font-size:44px;color:var(--gold);line-height:1.1;text-shadow:0 0 12px rgba(255,170,60,.6)}
+#finalLbl{font-size:12px;opacity:.7;letter-spacing:4px;margin-top:2px}
+#newRec{color:#ff9a6a;min-height:22px;font-size:15px;letter-spacing:3px}
+.row{display:flex;align-items:center;gap:10px;width:100%;max-width:360px;padding:9px 10px;margin-bottom:7px;border:1px solid rgba(226,218,196,.25);background:rgba(14,16,26,.8);border-radius:4px;text-align:left}
+.row .gl{flex:none;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--gold)}
+.row .tx{flex:1;font-size:12px;line-height:1.5;opacity:.85}.row .tx b{font-size:15px;color:#f0e6c8;letter-spacing:2px;opacity:1;font-weight:600}
+.row .bt{flex:none;min-width:70px;padding:7px 6px;font-size:13px;border:1px solid var(--gold);background:rgba(60,38,18,.8);border-radius:3px;letter-spacing:1px}
+.row .bt.dis{opacity:.4}.row .bt.on{background:rgba(70,100,50,.7);border-color:#9c6}
+.sect{font-size:13px;letter-spacing:6px;color:var(--gold);margin:12px 0 8px;opacity:.9}
+#rotate{position:fixed;left:0;right:0;top:0;z-index:20;display:none;padding:6px;text-align:center;font-size:13px;background:rgba(150,30,30,.92)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + var(--sb));z-index:30;padding:8px 16px;background:rgba(0,0,0,.8);border:1px solid var(--gold);border-radius:4px;font-size:13px;letter-spacing:2px;color:var(--gold);display:none;max-width:86%;text-align:center}
+@media (orientation:landscape) and (max-height:520px){#rotate{display:block}h1{font-size:46px}}
+@media (max-height:700px){h1{font-size:60px}.btn{padding:10px}#bossW{top:calc(86px + var(--st))}}
+</style>
+</head>
+<body>
+<video id="cam" playsinline webkit-playsinline muted autoplay></video>
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div class="b" id="topL"><div id="hp"></div><div id="stamW"><div id="stam"></div></div></div>
+  <div class="b" id="topR"><div id="souls"><small>魂</small><span id="soulsN">0</span></div>
+    <div id="topBtns"><button class="ib" id="muteBtn" type="button">音</button><button class="ib" id="pauseBtn" type="button">Ⅱ</button></div></div>
+  <div class="b" id="floorLine"></div>
+  <div class="b" id="curseTag"></div>
+  <div class="b" id="progW"><div id="prog"></div></div>
+  <div class="b" id="progT"></div>
+  <div class="b" id="bossW"><div id="bossN"></div><div id="bossBar"><div id="bossGhost"></div><div id="bossHp"></div></div></div>
+  <div class="b" id="combo"></div>
+  <button class="b" id="flaskBtn" type="button">
+    <svg viewBox="0 0 30 38"><path d="M11 1h8v3h-2v7l8 15c2 4-1 10-6 10H11c-5 0-8-6-6-10l8-15V4h-2z" fill="rgba(20,12,8,.8)" stroke="#e8c872" stroke-width="1.5"/><path d="M8 24l5-9h4l5 9c1 3-1 7-5 7h-4c-4 0-6-4-5-7z" fill="#ff8a2a"/></svg>
+    <span id="flaskN">3</span></button>
+  <div class="b" id="relicBar"></div>
+  <div class="b" id="pill"></div>
+</div>
+<div id="banner"><div class="t" id="bT"></div><div class="line"></div><div class="s" id="bS"></div></div>
+<div id="toast"></div>
+<div id="rotate">请把手机竖过来玩(竖屏体验最佳)</div>
+
+<!-- 主菜单 -->
+<div class="ov show" id="menu">
+  <h1>薪火斩</h1>
+  <div class="sub">不死之夜 · 切果轮回</div>
+  <div class="orn"></div>
+  <div id="menuBest"></div>
+  <button class="btn big" id="mRun" type="button">开始轮回</button>
+  <button class="btn" id="mDaily" type="button">每日挑战</button>
+  <button class="btn" id="mPractice" type="button">练习模式</button>
+  <button class="btn" id="mCamp" type="button">篝火营地</button>
+  <button class="btn alt" id="mHow" type="button">玩法说明</button>
+  <div class="small">黑夜里只有光能看清一切。用刀光点亮水果,在不死的夜里一层层向下猎杀首领。</div>
+</div>
+
+<!-- 操控方式 -->
+<div class="ov solid" id="ctl">
+  <div id="pTitle2" style="font-size:24px;letter-spacing:8px;color:var(--gold)">选择操控方式</div>
+  <div class="orn"></div>
+  <button class="btn" id="ctlCam" type="button">摄像头隔空挥手</button>
+  <div class="small" style="margin:0 0 10px">用食指指尖当刀光(需要允许摄像头,画面只在本机处理)</div>
+  <button class="btn big" id="ctlTouch" type="button" style="font-size:16px;letter-spacing:2px">不用摄像头,用手指滑屏玩</button>
+  <div id="ctlMsg"></div>
+  <button class="btn alt sm" id="ctlBack" type="button">返回</button>
+</div>
+
+<!-- 通用面板 -->
+<div class="ov solid" id="panel">
+  <div id="pTitle"></div><div class="orn"></div><div id="pSub"></div>
+  <div id="pCards"></div><div id="pFoot"></div>
+</div>
+
+<!-- 营地 -->
+<div class="ov solid" id="camp" style="justify-content:flex-start">
+  <div style="font-size:26px;letter-spacing:8px;color:var(--gold);margin-top:8px">篝火营地</div>
+  <div class="sub" id="campAsh" style="margin-bottom:8px"></div>
+  <div style="width:100%;display:flex;flex-direction:column;align-items:center" id="campList"></div>
+  <button class="btn alt" id="campBack" type="button" style="margin-top:10px">返回</button>
+</div>
+
+<!-- 玩法 -->
+<div class="ov solid" id="how">
+  <div style="font-size:24px;letter-spacing:8px;color:var(--gold)">玩法说明</div><div class="orn"></div>
+  <div id="howTxt" style="text-align:left;max-width:330px;font-size:13.5px;line-height:1.75;opacity:.92"></div>
+  <button class="btn alt" id="howBack" type="button" style="margin-top:14px">明白了</button>
+</div>
+
+<!-- 暂停 -->
+<div class="ov solid" id="pause">
+  <div style="font-size:26px;letter-spacing:10px;color:var(--gold)">暂 停</div><div class="orn"></div>
+  <div id="pauseInfo" style="font-size:12.5px;line-height:1.7;max-width:340px;text-align:left;margin-bottom:8px"></div>
+  <button class="btn" id="pResume" type="button">继续</button>
+  <button class="btn alt" id="pSound" type="button">音效:开</button>
+  <button class="btn alt" id="pQuit" type="button">放弃轮回</button>
+</div>
+
+<!-- 结算 -->
+<div class="ov solid" id="over">
+  <div id="overTitle">你已死亡</div>
+  <div class="rank" id="overRank"></div>
+  <div id="finalScore">0</div><div id="finalLbl">本轮获得的魂</div>
+  <div id="newRec"></div>
+  <div id="overInfo"></div>
+  <button class="btn big" id="againBtn" type="button">重返轮回</button>
+  <button class="btn" id="campBtn2" type="button">篝火营地</button>
+  <button class="btn alt" id="homeBtn" type="button">返回主菜单</button>
+</div>
+<script>
+(function () {
+'use strict';
+/* ================= 基础工具 ================= */
+const $ = id => document.getElementById(id);
+const cam = $('cam'), cv = $('c'), ctx = cv.getContext('2d');
+let W = 390, H = 844, dpr = 1;
+const TAU = Math.PI * 2;
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+let RRf = mulberry(Date.now() & 0xffffff);          // 轮回种子随机数(每日挑战固定)
+const rr = () => RRf(), rri = n => Math.floor(RRf() * n);
+const rpick = a => a[rri(a.length)];
+function rshuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rri(i + 1); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+/* ================= 存档 ================= */
+const SKEY = 'soulfruit_v1';
+const defSave = () => ({ ashes: 0, best: { run: { floor: 0, souls: 0 }, daily: { key: '', floor: 0, souls: 0 }, practice: { souls: 0 } },
+  meta: { hp: 0, flask: 0, stam: 0, soul: 0, gift: 0, unlock: {}, skinOwn: { ember: 1 }, skin: 'ember' },
+  ngMax: 0, stain: null, ach: {}, stats: { runs: 0, deaths: 0, bosses: 0, sliced: 0, wins: 0 }, muted: false });
+function merge(d, s) { if (!s || typeof s !== 'object') return d; for (const k in s) { if (d[k] && typeof d[k] === 'object' && !Array.isArray(d[k])) merge(d[k], s[k]); else d[k] = s[k]; } return d; }
+let SAVE = defSave();
+try { SAVE = merge(defSave(), JSON.parse(localStorage.getItem(SKEY))); } catch (e) {}
+function save() { try { localStorage.setItem(SKEY, JSON.stringify(SAVE)); } catch (e) {} }
+
+/* ================= 状态 ================= */
+const S = { screen: 'menu', phase: 'none', phaseT: 0, paused: false, t: 0, mode: 'touch', muted: !!SAVE.muted,
+  shake: 0, flash: 0, hurtFlash: 0, freeze: 0, lightT: 0, slowT: 0, darkT: 0, timeScale: 1, light: 0,
+  handReady: false, handLoading: false, handSeenAt: 0, stream: null, fallbackReason: '', pendingMode: null, pendingOpt: null, dying: 0 };
+let R = null;                         // 当前一轮
+let B = null;                         // 当前首领
+const ents = [], halves = [], parts = [], texts = [], flashes = [], rings = [], queue = [], ambient = [];
+const trails = {};
+
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  buildDark(); bgCache = {}; buildVignette();
+}
+let dark, dctx, vig, bgCache = {};
+function buildDark() { dark = document.createElement('canvas'); dark.width = Math.ceil(W / 3); dark.height = Math.ceil(H / 3); dctx = dark.getContext('2d'); }
+function buildVignette() {
+  vig = document.createElement('canvas'); vig.width = Math.ceil(W / 2); vig.height = Math.ceil(H / 2);
+  const g = vig.getContext('2d'), gr = g.createRadialGradient(vig.width / 2, vig.height * 0.5, vig.width * 0.25, vig.width / 2, vig.height * 0.5, vig.height * 0.78);
+  gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,4,.75)'); g.fillStyle = gr; g.fillRect(0, 0, vig.width, vig.height);
+}
+
+/* ================= 音效 (WebAudio 合成) ================= */
+let actx = null, master = null, ambOn = false;
+function initAudio() {
+  try {
+    if (!actx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { actx = new AC(); master = actx.createGain(); master.gain.value = S.muted ? 0 : 0.9; master.connect(actx.destination); } }
+    if (actx && actx.state === 'suspended') actx.resume();
+    if (actx && !ambOn) startAmbient();
+  } catch (e) { actx = null; }
+}
+function setMuted(m) { S.muted = m; SAVE.muted = m; save(); if (master) master.gain.value = m ? 0 : 0.9; $('muteBtn').style.opacity = m ? .45 : 1; $('pSound').textContent = '音效:' + (m ? '关' : '开'); }
+function startAmbient() {
+  ambOn = true;
+  try {
+    const g = actx.createGain(); g.gain.value = 0.05; g.connect(master);
+    [55, 82.4, 110.5].forEach((f, i) => { const o = actx.createOscillator(); o.type = i ? 'sine' : 'triangle'; o.frequency.value = f; const og = actx.createGain(); og.gain.value = i ? 0.5 : 1; o.connect(og); og.connect(g); o.start();
+      const l = actx.createOscillator(), lg = actx.createGain(); l.frequency.value = 0.07 + i * 0.05; lg.gain.value = 0.4; l.connect(lg); lg.connect(og.gain); l.start(); });
+    const len = actx.sampleRate * 2, buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0); let last = 0;
+    for (let i = 0; i < len; i++) { last = (last + (Math.random() * 2 - 1) * 0.06) * 0.985; d[i] = last * 3; }
+    const ns = actx.createBufferSource(); ns.buffer = buf; ns.loop = true; const f = actx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 380;
+    const ng = actx.createGain(); ng.gain.value = 0.22; ns.connect(f); f.connect(ng); ng.connect(master); ns.start();
+  } catch (e) {}
+}
+function tone(freq, type, dur, vol, slide, delay) {
+  if (!actx || S.muted) return;
+  try {
+    const t0 = actx.currentTime + (delay || 0), o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t0); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, slide), t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + 0.02);
+  } catch (e) {}
+}
+function noise(dur, vol, ftype, freq, q, delay, sweepTo) {
+  if (!actx || S.muted) return;
+  try {
+    const t0 = actx.currentTime + (delay || 0), len = Math.floor(actx.sampleRate * dur), buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const s = actx.createBufferSource(); s.buffer = buf; const f = actx.createBiquadFilter(); f.type = ftype; f.frequency.setValueAtTime(freq, t0); f.Q.value = q || 1;
+    if (sweepTo) f.frequency.exponentialRampToValueAtTime(sweepTo, t0 + dur);
+    const g = actx.createGain(); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+    s.connect(f); f.connect(g); g.connect(master); s.start(t0);
+  } catch (e) {}
+}
+let lastSlice = 0;
+function sfx(k, a) {
+  if (!actx || S.muted) return;
+  switch (k) {
+    case 'slice': { const n = performance.now(); if (n - lastSlice < 35) return; lastSlice = n; noise(0.13, 0.32, 'bandpass', 1500 + (a || 0) * 700, 0.8, 0, 3800); tone(900 + (a || 0) * 200, 'triangle', 0.08, 0.06, 300); break; }
+    case 'perfect': noise(0.16, 0.3, 'bandpass', 2400, 1, 0, 5000); tone(1568, 'sine', 0.5, 0.12); tone(2093, 'sine', 0.6, 0.07, 0, 0.03); break;
+    case 'parry': noise(0.12, 0.5, 'highpass', 3000, 1); tone(1800, 'sine', 0.5, 0.14); tone(2650, 'sine', 0.45, 0.1); tone(3400, 'sine', 0.35, 0.07); tone(220, 'square', 0.1, 0.1, 80); break;
+    case 'hit': tone(110, 'sine', 0.35, 0.5, 38); noise(0.22, 0.4, 'lowpass', 900, 1); break;
+    case 'bomb': tone(160, 'sawtooth', 0.5, 0.35, 36); noise(0.4, 0.45, 'lowpass', 1200, 1, 0, 120); break;
+    case 'heal': [523, 659, 784, 1046].forEach((f, i) => tone(f, 'sine', 0.5, 0.09, 0, i * 0.09)); break;
+    case 'souls': tone(988, 'sine', 0.18, 0.07); tone(1318, 'sine', 0.22, 0.06, 0, 0.06); break;
+    case 'bell': tone(196, 'sine', 2.6, 0.22); tone(196 * 2.76, 'sine', 1.8, 0.1); tone(196 * 5.4, 'sine', 1.1, 0.05); tone(98, 'sine', 3, 0.15); break;
+    case 'boss': tone(72, 'sawtooth', 1.4, 0.3, 34); tone(54, 'square', 1.2, 0.12, 30); noise(1.2, 0.2, 'lowpass', 400, 1, 0, 80); break;
+    case 'windup': tone(300, 'sawtooth', 0.7, 0.07, 640); break;
+    case 'fire': noise(0.3, 0.3, 'bandpass', 800, 1, 0, 200); tone(260, 'sawtooth', 0.25, 0.12, 90); break;
+    case 'ice': [1568, 2093, 2637].forEach((f, i) => tone(f, 'sine', 0.6, 0.06, 0, i * 0.05)); break;
+    case 'light': [392, 523, 659, 784, 1046].forEach((f, i) => tone(f, 'triangle', 0.7, 0.07, 0, i * 0.07)); break;
+    case 'gold': tone(1318, 'square', 0.1, 0.07); tone(1760, 'square', 0.2, 0.07, 0, 0.08); break;
+    case 'death': tone(220, 'sawtooth', 2.4, 0.3, 36); tone(110, 'sine', 3, 0.3, 30); noise(1.6, 0.2, 'lowpass', 600, 1, 0, 60); break;
+    case 'miss': tone(200, 'triangle', 0.25, 0.12, 100); break;
+    case 'click': tone(660, 'triangle', 0.06, 0.07); break;
+    case 'win': [262, 330, 392, 523, 659].forEach((f, i) => tone(f, 'triangle', 1.4, 0.1, 0, i * 0.18)); break;
+    case 'lightning': noise(0.25, 0.4, 'highpass', 1500, 1, 0, 6000); tone(2200, 'sawtooth', 0.15, 0.1, 400); break;
+    case 'exh': tone(180, 'triangle', 0.3, 0.2, 90); break;
+  }
+}
+function vib(p) { try { if (navigator.vibrate && !S.muted) navigator.vibrate(p); } catch (e) {} }
+
+/* ================= 光晕精灵 ================= */
+const glowCache = {};
+function glowSpr(color) {
+  if (glowCache[color]) return glowCache[color];
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, color); gr.addColorStop(0.25, color.replace(/[\d.]+\)$/, '0.55)')); gr.addColorStop(1, color.replace(/[\d.]+\)$/, '0)'));
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return glowCache[color] = c;
+}
+let holeSpr = null;
+(function () {
+  holeSpr = document.createElement('canvas'); holeSpr.width = holeSpr.height = 128; const g = holeSpr.getContext('2d');
+  const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(0.35, 'rgba(0,0,0,.8)'); gr.addColorStop(0.7, 'rgba(0,0,0,.28)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+})();
+function glow(x, y, r, color, a) { const s = glowSpr(color); ctx.globalAlpha = clamp(a, 0, 1); ctx.drawImage(s, x - r, y - r, r * 2, r * 2); }
+
+/* ================= 水果精灵 (程序化绘制) ================= */
+const SZ = 230, C0 = 115, R0 = 64;
+const sprites = {};
+function mk() { const c = document.createElement('canvas'); c.width = c.height = SZ; return c; }
+function disc(g, r, fill, cx, cy) { g.fillStyle = fill; g.beginPath(); g.arc(cx == null ? C0 : cx, cy == null ? C0 : cy, r, 0, TAU); g.fill(); }
+function rgd(g, x0, y0, r0, x1, y1, r1, stops) { const gr = g.createRadialGradient(x0, y0, r0, x1, y1, r1); stops.forEach(s => gr.addColorStop(s[0], s[1])); return gr; }
+function rimLight(g, color, rr0) { g.save(); g.strokeStyle = color; g.globalAlpha = .85; g.lineWidth = 4; g.beginPath(); g.arc(C0, C0, (rr0 || R0) - 2, Math.PI * 0.9, Math.PI * 1.9); g.stroke(); g.globalAlpha = .35; g.lineWidth = 8; g.beginPath(); g.arc(C0, C0, (rr0 || R0) - 4, 0, TAU); g.stroke(); g.restore(); }
+function spec(g) { g.fillStyle = 'rgba(255,255,255,.4)'; g.beginPath(); g.ellipse(C0 - 22, C0 - 28, 15, 8, -0.7, 0, TAU); g.fill(); }
+function srng(s) { return mulberry(s); }
+function buildSprites() {
+  let c, g, i, a;
+  // 西瓜
+  c = mk(); g = c.getContext('2d');
+  disc(g, R0, rgd(g, C0 - 18, C0 - 22, 6, C0, C0, R0, [[0, '#4ccf74'], [0.55, '#1c8a43'], [1, '#08371a']]));
+  g.save(); g.beginPath(); g.arc(C0, C0, R0, 0, TAU); g.clip(); g.strokeStyle = 'rgba(4,40,16,.85)'; g.lineWidth = 7; g.lineCap = 'round';
+  for (i = -3; i <= 3; i++) { g.beginPath(); g.moveTo(C0 + i * 17, C0 - R0); g.bezierCurveTo(C0 + i * 31, C0 - R0 * .4, C0 + i * 31, C0 + R0 * .4, C0 + i * 17, C0 + R0); g.stroke(); } g.restore();
+  rimLight(g, '#8dffb0'); spec(g); sprites.watermelon = { skin: c };
+  c = mk(); g = c.getContext('2d'); disc(g, R0, '#0d4a22'); disc(g, R0 * .94, '#cdeeb0'); disc(g, R0 * .88, rgd(g, C0, C0, 4, C0, C0, R0 * .88, [[0, '#ff7090'], [0.7, '#e6284c'], [1, '#c01234']]));
+  g.fillStyle = '#16060a'; for (i = 0; i < 9; i++) { a = i * 2.4; const d = 12 + (i % 3) * 14; g.save(); g.translate(C0 + Math.cos(a) * d, C0 + Math.sin(a) * d); g.rotate(a); g.beginPath(); g.ellipse(0, 0, 3.4, 6.2, 0, 0, TAU); g.fill(); g.restore(); }
+  sprites.watermelon.flesh = c;
+  // 橙子
+  c = mk(); g = c.getContext('2d'); disc(g, R0, rgd(g, C0 - 18, C0 - 22, 6, C0, C0, R0, [[0, '#ffc766'], [0.5, '#ff8a10'], [1, '#8c3a00']]));
+  const r1 = srng(5); g.fillStyle = 'rgba(120,50,0,.35)'; for (i = 0; i < 60; i++) { a = r1() * TAU; const d = Math.sqrt(r1()) * R0 * .92; g.beginPath(); g.arc(C0 + Math.cos(a) * d, C0 + Math.sin(a) * d, 1.4, 0, TAU); g.fill(); }
+  g.fillStyle = '#2e8a30'; g.beginPath(); g.ellipse(C0 + 12, C0 - R0 * .86, 15, 6, -0.4, 0, TAU); g.fill(); disc(g, 4, '#5a3a14', C0, C0 - R0 * .88);
+  rimLight(g, '#ffd27a'); spec(g); sprites.orange = { skin: c };
+  c = mk(); g = c.getContext('2d'); disc(g, R0, '#d46a00'); disc(g, R0 * .94, '#ffe7b0'); disc(g, R0 * .88, rgd(g, C0, C0, 4, C0, C0, R0 * .88, [[0, '#ffc04d'], [1, '#ff9210']]));
+  g.strokeStyle = '#ffe7b0'; g.lineWidth = 3.5; for (i = 0; i < 9; i++) { a = i * TAU / 9; g.beginPath(); g.moveTo(C0, C0); g.lineTo(C0 + Math.cos(a) * R0 * .88, C0 + Math.sin(a) * R0 * .88); g.stroke(); }
+  disc(g, 6, '#ffe7b0'); sprites.orange.flesh = c;
+  // 苹果
+  c = mk(); g = c.getContext('2d'); disc(g, R0, rgd(g, C0 - 20, C0 - 24, 6, C0, C0, R0, [[0, '#ff6a78'], [0.5, '#d4202e'], [1, '#600a14']]));
+  g.strokeStyle = '#4a2c12'; g.lineWidth = 5; g.lineCap = 'round'; g.beginPath(); g.moveTo(C0, C0 - R0 * .6); g.quadraticCurveTo(C0 + 3, C0 - R0 * .92, C0 + 11, C0 - R0 * 1.02); g.stroke();
+  g.fillStyle = '#3ea44a'; g.beginPath(); g.ellipse(C0 + 24, C0 - R0 * .86, 17, 7, -0.5, 0, TAU); g.fill(); rimLight(g, '#ff9aa4'); spec(g); sprites.apple = { skin: c };
+  c = mk(); g = c.getContext('2d'); disc(g, R0, '#a01822'); disc(g, R0 * .94, '#fff4cc'); disc(g, R0 * .5, '#fde9a0'); g.fillStyle = '#3e2410';
+  [[-12, -3], [12, -3], [0, 13]].forEach(p => { g.save(); g.translate(C0 + p[0], C0 + p[1]); g.rotate(p[0] * .04); g.beginPath(); g.ellipse(0, 0, 4, 7.5, 0, 0, TAU); g.fill(); g.restore(); }); sprites.apple.flesh = c;
+  // 菠萝
+  c = mk(); g = c.getContext('2d'); g.save(); g.translate(C0, C0 + 6); g.scale(.82, 1); g.translate(-C0, -C0 - 6);
+  disc(g, R0, rgd(g, C0 - 16, C0 - 14, 6, C0, C0, R0, [[0, '#ffe066'], [0.55, '#e0a418'], [1, '#6a4408']]), C0, C0 + 6);
+  g.save(); g.beginPath(); g.arc(C0, C0 + 6, R0, 0, TAU); g.clip(); g.strokeStyle = 'rgba(90,50,0,.6)'; g.lineWidth = 2.2;
+  for (i = -8; i <= 8; i++) { g.beginPath(); g.moveTo(C0 + i * 16 - 70, C0 - 70); g.lineTo(C0 + i * 16 + 70, C0 + 82); g.stroke(); g.beginPath(); g.moveTo(C0 + i * 16 + 70, C0 - 70); g.lineTo(C0 + i * 16 - 70, C0 + 82); g.stroke(); } g.restore(); g.restore();
+  g.fillStyle = '#35a84a'; for (i = -3; i <= 3; i++) { g.save(); g.translate(C0, C0 - R0 + 8); g.rotate(i * .26); g.beginPath(); g.moveTo(-8, 0); g.quadraticCurveTo(-2, -30 - (3 - Math.abs(i)) * 5, 0, -42 - (3 - Math.abs(i)) * 6); g.quadraticCurveTo(2, -30 - (3 - Math.abs(i)) * 5, 8, 0); g.fill(); g.restore(); }
+  spec(g); sprites.pineapple = { skin: c };
+  c = mk(); g = c.getContext('2d'); g.save(); g.translate(C0, C0 + 6); g.scale(.82, 1); g.translate(-C0, -C0 - 6);
+  disc(g, R0, '#a8780c', C0, C0 + 6); disc(g, R0 * .93, rgd(g, C0, C0, 4, C0, C0, R0 * .93, [[0, '#fff5b0'], [1, '#ffd23a']]), C0, C0 + 6); disc(g, R0 * .3, '#fff0a0', C0, C0 + 6); g.restore(); sprites.pineapple.flesh = c;
+  // 火龙果
+  c = mk(); g = c.getContext('2d'); disc(g, R0, rgd(g, C0 - 18, C0 - 22, 6, C0, C0, R0, [[0, '#ff6ac0'], [0.5, '#d01a7c'], [1, '#5a0838']]));
+  g.fillStyle = '#34c060'; for (i = 0; i < 10; i++) { a = i * TAU / 10 + .2; g.save(); g.translate(C0 + Math.cos(a) * R0 * .93, C0 + Math.sin(a) * R0 * .93); g.rotate(a); g.beginPath(); g.moveTo(0, -7); g.quadraticCurveTo(14, -3, 24, 0); g.quadraticCurveTo(14, 3, 0, 7); g.fill(); g.restore(); }
+  rimLight(g, '#ff9ee0'); spec(g); sprites.dragon = { skin: c };
+  c = mk(); g = c.getContext('2d'); disc(g, R0, '#b01470'); disc(g, R0 * .94, rgd(g, C0, C0, 4, C0, C0, R0 * .94, [[0, '#fff2fa'], [1, '#f6c6e4']])); g.fillStyle = '#1a0a14'; const r2 = srng(9);
+  for (i = 0; i < 70; i++) { a = r2() * TAU; const d = Math.sqrt(r2()) * R0 * .84; g.beginPath(); g.arc(C0 + Math.cos(a) * d, C0 + Math.sin(a) * d, 1.7, 0, TAU); g.fill(); } sprites.dragon.flesh = c;
+  // 柠檬
+  c = mk(); g = c.getContext('2d'); g.save(); g.translate(C0, C0); g.scale(1.14, .9); g.translate(-C0, -C0);
+  disc(g, R0, rgd(g, C0 - 18, C0 - 22, 6, C0, C0, R0, [[0, '#f6ff8a'], [0.55, '#d8e020'], [1, '#6a7000']])); g.fillStyle = '#c8cf10'; g.beginPath(); g.arc(C0 - R0 - 2, C0, 8, 0, TAU); g.arc(C0 + R0 + 2, C0, 8, 0, TAU); g.fill(); g.restore(); spec(g); sprites.lemon = { skin: c };
+  c = mk(); g = c.getContext('2d'); g.save(); g.translate(C0, C0); g.scale(1.14, .9); g.translate(-C0, -C0); disc(g, R0, '#a8b000'); disc(g, R0 * .93, '#fcffd0'); disc(g, R0 * .87, '#e8f26a');
+  g.strokeStyle = '#fcffd0'; g.lineWidth = 3; for (i = 0; i < 8; i++) { a = i * TAU / 8; g.beginPath(); g.moveTo(C0, C0); g.lineTo(C0 + Math.cos(a) * R0 * .87, C0 + Math.sin(a) * R0 * .87); g.stroke(); } g.restore(); sprites.lemon.flesh = c;
+  // 暗影炸弹(暗影球)
+  c = mk(); g = c.getContext('2d'); disc(g, R0 - 2, rgd(g, C0 - 16, C0 - 18, 4, C0, C0, R0, [[0, '#2b2438'], [0.6, '#0e0b16'], [1, '#030207']]));
+  g.strokeStyle = 'rgba(120,70,160,.28)'; g.lineWidth = 2; const r3 = srng(21); for (i = 0; i < 5; i++) { a = r3() * TAU; g.beginPath(); g.moveTo(C0 + Math.cos(a) * 8, C0 + Math.sin(a) * 8); g.quadraticCurveTo(C0 + Math.cos(a + .5) * 30, C0 + Math.sin(a + .5) * 30, C0 + Math.cos(a + .2) * R0 * .85, C0 + Math.sin(a + .2) * R0 * .85); g.stroke(); }
+  sprites.bomb = { skin: c };
+}
+buildSprites();
+const FT = {   // 水果类型: 基础魂、半径系数、果汁光色、权重
+  watermelon: { n: '西瓜', base: 12, rf: .135, col: 'rgba(255,70,110,1)', juice: '#ff5a86', aura: 'rgba(60,255,120,1)', w: 1.0 },
+  orange: { n: '橙子', base: 9, rf: .105, col: 'rgba(255,170,40,1)', juice: '#ffae2a', aura: 'rgba(255,150,30,1)', w: 1.3 },
+  apple: { n: '苹果', base: 8, rf: .1, col: 'rgba(255,60,70,1)', juice: '#ff4a58', aura: 'rgba(255,60,80,1)', w: 1.3 },
+  pineapple: { n: '菠萝', base: 14, rf: .105, col: 'rgba(255,220,60,1)', juice: '#ffd83a', aura: 'rgba(255,220,60,1)', w: .8 },
+  dragon: { n: '火龙果', base: 16, rf: .11, col: 'rgba(255,100,200,1)', juice: '#ff6ac8', aura: 'rgba(255,80,190,1)', w: .7 },
+  lemon: { n: '柠檬', base: 8, rf: .09, col: 'rgba(230,255,60,1)', juice: '#e6ff3a', aura: 'rgba(220,255,60,1)', w: 1.0 }
+};
+
+/* ================= 背景 (暗夜场景) ================= */
+const PALS = {
+  grave: ['#1c2c52', '#0a1226', 'rgba(150,180,255,'], garden: ['#13403f', '#07161a', 'rgba(150,255,210,'],
+  tower: ['#2a2458', '#0c0a22', 'rgba(190,170,255,'], flame: ['#4a2214', '#16080a', 'rgba(255,170,110,'],
+  boss: ['#4a1220', '#150509', 'rgba(255,120,120,'], final: ['#2e2a14', '#0a0805', 'rgba(255,220,130,'], camp: ['#1d2a46', '#080c18', 'rgba(170,200,255,']
+};
+function getBg(key) { return bgCache[key] || (bgCache[key] = buildBg(key)); }
+function buildBg(key) {
+  const p = PALS[key] || PALS.grave, c = document.createElement('canvas'), w = Math.ceil(W / 1.5), h = Math.ceil(H / 1.5); c.width = w; c.height = h; const g = c.getContext('2d'), r = srng(key.length * 77 + 3);
+  const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, p[0]); gr.addColorStop(0.7, p[1]); gr.addColorStop(1, '#030409'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  g.fillStyle = p[2] + '.8)'; for (let i = 0; i < 70; i++) { g.globalAlpha = r() * .7 + .15; g.fillRect(r() * w, r() * h * .55, 1.1, 1.1); } g.globalAlpha = 1;
+  const mx = w * .74, my = h * .14, mgr = g.createRadialGradient(mx, my, 2, mx, my, w * .35); mgr.addColorStop(0, p[2] + '.55)'); mgr.addColorStop(0.15, p[2] + '.18)'); mgr.addColorStop(1, p[2] + '0)'); g.fillStyle = mgr; g.fillRect(0, 0, w, h * .6);
+  g.fillStyle = p[2] + '.92)'; g.beginPath(); g.arc(mx, my, w * .045, 0, TAU); g.fill();
+  // 远山
+  g.fillStyle = 'rgba(4,6,14,.55)'; g.beginPath(); g.moveTo(0, h * .62); for (let x = 0; x <= w; x += w / 14) g.lineTo(x, h * (.5 + r() * .12)); g.lineTo(w, h * .7); g.lineTo(0, h * .7); g.fill();
+  // 哥特废墟
+  const ruin = (x, bw, bh, a) => { g.fillStyle = 'rgba(3,4,10,' + a + ')'; g.fillRect(x, h * .74 - bh, bw, bh); g.beginPath(); g.moveTo(x - 3, h * .74 - bh); g.lineTo(x + bw / 2, h * .74 - bh - bw * 1.3); g.lineTo(x + bw + 3, h * .74 - bh); g.fill();
+    g.fillStyle = p[2] + '.16)'; const aw = bw * .22, ax = x + bw / 2 - aw / 2, ay = h * .74 - bh * .75; g.beginPath(); g.moveTo(ax, ay + aw * 2); g.lineTo(ax, ay); g.quadraticCurveTo(ax + aw / 2, ay - aw, ax + aw, ay); g.lineTo(ax + aw, ay + aw * 2); g.fill(); };
+  ruin(w * .04, w * .14, h * .2, .85); ruin(w * .24, w * .1, h * .12, .8); ruin(w * .7, w * .16, h * .24, .85); ruin(w * .88, w * .09, h * .15, .85);
+  // 枯树
+  g.strokeStyle = 'rgba(3,4,9,.95)'; g.lineCap = 'round';
+  const tree = (x, y, len, ang, wd, d) => { if (d > 6 || len < 4) return; const x2 = x + Math.cos(ang) * len, y2 = y + Math.sin(ang) * len; g.lineWidth = wd; g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke(); tree(x2, y2, len * .72, ang - .5 - r() * .3, wd * .68, d + 1); tree(x2, y2, len * .72, ang + .45 + r() * .3, wd * .68, d + 1); };
+  tree(w * .52, h * .78, h * .07, -Math.PI / 2 + .1, 5, 0); tree(w * .12, h * .8, h * .05, -Math.PI / 2 - .2, 4, 0);
+  // 地面 + 墓碑 + 篝火剑
+  g.fillStyle = '#02030a'; g.beginPath(); g.moveTo(0, h * .88); for (let x = 0; x <= w; x += 10) g.lineTo(x, h * .86 + Math.sin(x * .05) * 4); g.lineTo(w, h); g.lineTo(0, h); g.fill();
+  [[.08, .86], [.2, .9], [.8, .87], [.93, .91]].forEach(t => { g.fillStyle = '#040510'; const tx = w * t[0], ty = h * t[1]; g.beginPath(); g.moveTo(tx - 7, ty + 16); g.lineTo(tx - 7, ty); g.quadraticCurveTo(tx, ty - 11, tx + 7, ty); g.lineTo(tx + 7, ty + 16); g.fill(); });
+  g.fillStyle = '#0a0b14'; g.fillRect(w / 2 - 1.5, h * .88, 3, -h * .06); g.fillRect(w / 2 - 7, h * .88 - h * .045, 14, 2.5);
+  const fg = g.createLinearGradient(0, h * .8, 0, h); fg.addColorStop(0, p[2] + '0)'); fg.addColorStop(1, p[2] + '.1)'); g.fillStyle = fg; g.fillRect(0, h * .8, w, h * .2);
+  return c;
+}
+function floorPal() { if (!R || S.screen !== 'play') return 'camp'; if (R.mode === 'practice') return R.pBoss != null ? ['boss', 'boss', 'final'][R.pBoss] : 'grave'; return ['camp', 'grave', 'garden', 'boss', 'tower', 'flame', 'boss', 'final'][R.floor] || 'grave'; }
+
+/* ================= 数据:遗物 / 诅咒 / 首领 ================= */
+const RN = ['普通', '稀有', '传说'];
+const RELICS = [
+  { id: 'flame', n: '火焰刃', g: '焰', r: 0, d: '斩开水果时火星四溅,周围 <b>80</b> 像素内的水果一并斩开' },
+  { id: 'bigblade', n: '宽刃', g: '刃', r: 0, d: '刀光判定范围 <b>+60%</b>,更容易擦中水果' },
+  { id: 'frost', n: '霜息', g: '霜', r: 0, d: '世界流速 <b>-15%</b>,水果飞得更从容' },
+  { id: 'crit', n: '会心之眼', g: '暴', r: 0, d: '<b>18%</b> 几率暴击:魂 ×3,对首领伤害 ×2.5' },
+  { id: 'stamring', n: '耐力戒指', g: '耐', r: 0, d: '体力上限 <b>+30</b>,体力回复 <b>+25%</b>' },
+  { id: 'magnet', n: '魂之磁石', g: '磁', r: 0, d: '所有魂的获取 <b>+25%</b>' },
+  { id: 'seed', n: '薪火之种', g: '种', r: 0, d: '最大生命 <b>+1</b> 并立刻回复 1 点' },
+  { id: 'lantern', n: '萤火灯笼', g: '灯', r: 0, d: '刀光照亮的半径 <b>+45%</b>,浓雾与暗域的影响更小' },
+  { id: 'combo', n: '连击之魂', g: '连', r: 0, d: '连斩窗口 <b>+0.5 秒</b>,连斩倍率成长更快' },
+  { id: 'reaper', n: '收割者', g: '镰', r: 0, d: '每斩一个水果回复 <b>6</b> 点体力,对首领伤害 <b>×1.5</b>' },
+  { id: 'shield', n: '灰烬护盾', g: '盾', r: 1, d: '每层开始时获得一层护盾,<b>抵挡一次伤害</b>' },
+  { id: 'twin', n: '双刃', g: '双', r: 1, d: '每次斩击再斩一次,魂 <b>+40%</b>' },
+  { id: 'parry', n: '弹反大师', g: '弹', r: 1, d: '弹反判定放宽;弹反回复体力并使首领 <b>破防更久</b>' },
+  { id: 'defuse', n: '拆弹术', g: '拆', r: 1, d: '斩中暗影炸弹时有 <b>60%</b> 几率无害,并化作 30 魂' },
+  { id: 'chain', n: '连锁闪电', g: '雷', r: 1, lock: 'chain', d: '每斩 5 个水果,闪电自动劈开至多 <b>3</b> 个水果' },
+  { id: 'vamp', n: '吸血刃', g: '血', r: 1, lock: 'vamp', d: '每斩 <b>15</b> 个水果回复 1 点生命' },
+  { id: 'sun', n: '太阳之刃', g: '日', r: 2, lock: 'sun', d: '连斩每满 <b>12</b> 触发 4 秒光明时刻;光明时刻魂 <b>×3</b>' },
+  { id: 'gold', n: '点石成金', g: '金', r: 2, lock: 'gold', d: '暗影炸弹<b>永远无害</b>,斩中化作 40 魂;金色幸运果更常见' },
+  { id: 'ashheart', n: '灰烬之心', g: '烬', r: 2, lock: 'ashheart', d: '致命一击时<b>复活一次</b>,恢复一半生命并震散敌弹' }
+];
+const RMAP = {}; RELICS.forEach(r => RMAP[r.id] = r);
+const SYNS = [
+  { a: 'flame', b: 'frost', n: '蒸腾', d: '魂 +15%' }, { a: 'chain', b: 'bigblade', n: '雷网', d: '闪电可劈 5 个' },
+  { a: 'vamp', b: 'shield', n: '血盾', d: '每 10 个回血' }, { a: 'twin', b: 'crit', n: '暴双刃', d: '暴击率 +12%' }
+];
+const CURSES = {
+  fog: { n: '浓雾', g: '雾', d: '视野大减,只有刀光附近能看清', m: 1.5 }, gale: { n: '疾风', g: '风', d: '水果飞得更快', m: 1.5 },
+  mines: { n: '雷区', g: '雷', d: '暗影炸弹多一倍有余', m: 1.5 }, weary: { n: '疲惫', g: '疲', d: '体力回复变慢、消耗更快', m: 1.5 },
+  seal: { n: '封印', g: '封', d: '本层无法使用薪火瓶', m: 1.5 }, swarm: { n: '群魔', g: '魔', d: '怨灵果大量出现', m: 1.5 }
+};
+const CURSE_KEYS = Object.keys(CURSES);
+const BOSSES = [
+  { id: 'melon', name: '腐朽的西瓜骑士', sub: '—— 第 一 首 领 ——', fruit: 'watermelon', hp: 320, col: 'rgba(90,255,140,1)', floor: 3, soul: 150, vN: [0, 3, 4, 5],
+    atk: { 1: ['volley', 'volley', 'feast'], 2: ['volley', 'bombs', 'volley', 'feast'], 3: ['volley', 'heavy', 'bombs', 'volley'] } },
+  { id: 'orange', name: '灼眼的橙之女巫', sub: '—— 第 二 首 领 ——', fruit: 'orange', hp: 460, col: 'rgba(255,150,40,1)', floor: 6, soul: 260, vN: [0, 4, 5, 6],
+    atk: { 1: ['volley', 'bombs', 'feast'], 2: ['volley', 'blackout', 'bombs', 'volley'], 3: ['volley', 'blackout', 'heavy', 'bombs'] } },
+  { id: 'dragon', name: '终焉薪王·赤龙果', sub: '—— 最 终 首 领 ——', fruit: 'dragon', hp: 640, col: 'rgba(255,90,190,1)', floor: 7, soul: 420, vN: [0, 4, 6, 7],
+    atk: { 1: ['volley', 'heavy', 'feast'], 2: ['volley', 'bombs', 'blackout', 'heavy'], 3: ['volley', 'heavy', 'blackout', 'bombs', 'volley'] } }
+];
+const FLOORS = ['', '灰烬墓地', '枯萎花园', '腐朽王座厅', '沉没钟楼', '灼烧回廊', '女巫的炼炉', '薪王的余烬'];
+const SKINS = {
+  ember: { n: '烬红', core: '#fff4dc', glow: 'rgba(255,140,40,1)', rgb: '255,150,50', cost: 0 },
+  frost: { n: '霜蓝', core: '#eaffff', glow: 'rgba(90,200,255,1)', rgb: '100,200,255', cost: 40 },
+  jade: { n: '翡翠', core: '#f2fff0', glow: 'rgba(80,255,140,1)', rgb: '90,255,150', cost: 40 },
+  violet: { n: '紫电', core: '#fbf0ff', glow: 'rgba(190,100,255,1)', rgb: '190,110,255', cost: 60 },
+  gold: { n: '金辉', core: '#fffbe0', glow: 'rgba(255,215,80,1)', rgb: '255,215,90', cost: 100 }
+};
+const TITLES = [[0, '无火的余灰'], [100, '萤火学徒'], [300, '流浪剑士'], [700, '暗夜剑客'], [1300, '猎火者'], [2200, '篝火守护者'], [3500, '光之大师'], [5500, '不灭薪王']];
+function titleFor(n) { let t = TITLES[0][1]; TITLES.forEach(x => { if (n >= x[0]) t = x[1]; }); return t; }
+const has = id => !!R && R.relics.indexOf(id) >= 0;
+const synOn = (a, b) => has(a) && has(b);
+
+function recalc() {
+  const M = SAVE.meta, d = R.d = {};
+  d.bladeR = 6 + (has('bigblade') ? 16 : 0); d.speed = has('frost') ? .85 : 1;
+  d.crit = (has('crit') ? .18 : 0) + (synOn('twin', 'crit') ? .12 : 0);
+  d.soulMult = (1 + .1 * M.soul) * (has('magnet') ? 1.25 : 1) * (has('twin') ? 1.4 : 1) * (synOn('flame', 'frost') ? 1.15 : 1);
+  d.regen = 1 + (has('stamring') ? .25 : 0) + .1 * M.stam; R.maxStam = 100 + 15 * M.stam + (has('stamring') ? 30 : 0);
+  d.comboWin = 1.15 + (has('combo') ? .5 : 0); d.comboGrow = has('combo') ? .15 : .1;
+  d.parryWin = has('parry') ? .58 : .72; d.apexT = has('parry') ? .26 : .17; d.lantern = 1 + (has('lantern') ? .45 : 0);
+  d.bossMult = has('reaper') ? 1.5 : 1; d.splash = has('flame') ? 80 : 0; d.chainN = synOn('chain', 'bigblade') ? 5 : 3; d.vampN = synOn('vamp', 'shield') ? 10 : 15;
+}
+
+/* ================= 一轮的创建 ================= */
+function dateKey() { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
+function newRun(mode, opt) {
+  opt = opt || {}; const M = SAVE.meta;
+  let seed = Math.floor(Math.random() * 1e6) + 1;
+  if (mode === 'daily') seed = dateKey();
+  RRf = mulberry(seed * 7919 + 13);
+  R = { mode: mode, seed: seed, ng: mode === 'daily' ? 0 : (opt.ng || 0), floor: 1, maxHp: 5 + M.hp, hp: 5 + M.hp, maxFlask: 2 + M.flask, flasks: 2 + M.flask,
+    stam: 100, maxStam: 100, souls: 0, soulsTotal: 0, relics: [], shield: 0, sliced: 0, combo: 0, comboT: 0, maxCombo: 0, parries: 0, perfects: 0, bosses: 0, cleared: 0,
+    revived: false, cnt: 0, vampCnt: 0, curse: null, curseMult: 1, bonusRelic: false, drinking: 0, exh: false, idle: 0, progress: 0, quota: 10, emberGiven: false,
+    stainDone: false, stainT: 0, pBoss: null, dailyCurse: null, hitless: true, floorT: 0, lost: 0, boughtShield: 0 };
+  R.d = {}; recalc(); R.stam = R.maxStam;
+  if (mode === 'daily') R.dailyCurse = CURSE_KEYS[seed % CURSE_KEYS.length];
+  // 营地赠礼
+  if (mode !== 'practice') {
+    if (M.gift >= 1) { const o = RELICS.filter(r => r.r === 0 && !r.lock && r.id !== 'seed'); addRelic(rpick(o).id, true); }
+    if (M.gift >= 2) { const o = RELICS.filter(r => r.r === 1 && !r.lock && !has(r.id)); addRelic(rpick(o).id, true); }
+  }
+  R.hp = R.maxHp; R.stam = R.maxStam;
+  clearWorld();
+  return R;
+}
+function clearWorld() { ents.length = halves.length = parts.length = texts.length = flashes.length = rings.length = queue.length = 0; B = null; bolts.length = 0; S.lightT = S.slowT = S.darkT = 0; S.timeScale = 1; }
+function addRelic(id, silent) {
+  if (has(id)) return; R.relics.push(id);
+  if (id === 'seed') { R.maxHp++; R.hp = Math.min(R.maxHp, R.hp + 1); }
+  recalc(); dirty.relics = dirty.hud = true;
+}
+
+/* ================= 物理参数 ================= */
+function spd() { if (!R) return 1; const n = R.mode === 'practice' ? 3 : R.floor; return (1 + .025 * n + R.ng * .07) * (R.curse === 'gale' ? 1.2 : 1) * R.d.speed; }
+function gravity() { const s = spd(); return H * 1.75 * s * s; }
+function pickType() { let tot = 0, k; for (k in FT) tot += FT[k].w; let r = Math.random() * tot; for (k in FT) { r -= FT[k].w; if (r <= 0) return k; } return 'apple'; }
+function launch(kind, x, o) {
+  o = o || {}; const base = Math.min(W, H * .62); let r, type = o.type;
+  if (kind === 'fruit') { type = type || pickType(); r = base * FT[type].rf; } else if (kind === 'bomb') r = base * .1; else if (kind === 'item') r = base * .085; else r = base * .09;
+  if (o.elite) r *= 1.12;
+  const g = gravity(), h = (o.h || rand(.5, .86)) * H, vy = -Math.sqrt(2 * g * h), T = -2 * vy / g;
+  const tx = o.tx != null ? o.tx : rand(.25, .75) * W, vx = o.vx != null ? o.vx : (tx - x) / T * rand(.6, 1);
+  const e = { kind: kind, type: type, itype: o.itype, x: x, y: o.y != null ? o.y : H + r * 1.3, r: r, vx: vx, vy: o.vy != null ? o.vy : vy, rot: rand(0, TAU), vrot: rand(-3, 3),
+    dead: false, hp: o.elite ? 2 : (o.hp || 1), elite: !!o.elite, age: 0, hitT: 0, demo: !!o.demo, sd: Math.random() * 10 };
+  ents.push(e); return e;
+}
+function later(dt, fn) { queue.push({ t: dt, fn: fn }); }
+
+/* ================= 楼层与出怪 ================= */
+function floorN() { return R.mode === 'practice' ? 3 : R.floor; }
+function isBossFloor(n) { return n === 3 || n === 6 || n === 7; }
+function bossFor(n) { return BOSSES.filter(b => b.floor === n)[0]; }
+function spawnParams() {
+  const n = floorN(), c = R.curse;
+  return { interval: Math.max(.5, 1.35 - .07 * n - .015 * R.ng) * (c === 'swarm' ? .85 : 1),
+    bombP: Math.min(.4, (n < 2 ? .04 : .07 + .018 * n + .02 * R.ng) * (c === 'mines' ? 2.3 : 1)),
+    eliteP: Math.min(.5, (n < 2 ? 0 : .05 + .03 * n + .02 * R.ng) * (c === 'swarm' ? 2.6 : 1)) };
+}
+function fruitSpec(P) {
+  const q = Math.random();
+  if (q < P.bombP) return { kind: 'bomb' };
+  if (q < P.bombP + P.eliteP) return { kind: 'fruit', elite: true };
+  return { kind: 'fruit' };
+}
+function spawnPattern() {
+  const P = spawnParams(), n = floorN(), m = W * .13, r = Math.random();
+  const pat = r < .42 ? 'burst' : r < .42 + (n >= 2 ? .24 : .12) ? 'arc' : r < .8 ? 'fountain' : 'cross';
+  if (pat === 'burst') {
+    const k = Math.random() < Math.min(.65, .2 + n * .06) ? Math.floor(rand(2, Math.min(5, 2 + n / 2 + 1))) : 1;
+    for (let i = 0; i < k; i++) { const x = m + (W - 2 * m) * ((i + Math.random() * .8) / k); later(i * .05, () => { const s = fruitSpec(P); launch(s.kind, x, s); }); }
+  } else if (pat === 'arc') {
+    const dir = Math.random() < .5 ? 1 : -1, k = 4 + Math.floor(Math.random() * 3), x0 = dir > 0 ? W * .1 : W * .9, tx = dir > 0 ? W * .85 : W * .15, h = rand(.55, .75);
+    for (let i = 0; i < k; i++) later(i * .15, () => { const s = i === 2 && Math.random() < P.bombP * 2.5 ? { kind: 'bomb' } : fruitSpec({ bombP: 0, eliteP: P.eliteP * .5 }); launch(s.kind, x0, { elite: s.elite, tx: tx, h: h, vx: (tx - x0) / 2.2 }); });
+  } else if (pat === 'fountain') {
+    const k = 5 + Math.floor(n / 3);
+    for (let i = 0; i < k; i++) later(i * .06, () => { const s = fruitSpec({ bombP: P.bombP * .7, eliteP: P.eliteP }); launch(s.kind, W / 2 + rand(-20, 20), { elite: s.elite, vx: (i / (k - 1) - .5) * W * .6, h: rand(.55, .8) }); });
+  } else {
+    const k = 3;
+    for (let i = 0; i < k; i++) later(i * .2, () => { const s1 = fruitSpec(P), s2 = fruitSpec({ bombP: 0, eliteP: P.eliteP }); launch(s1.kind, W * .05, { elite: s1.elite, tx: W * .6, h: rand(.55, .7) }); launch(s2.kind, W * .95, { elite: s2.elite, tx: W * .4, h: rand(.55, .7) }); });
+  }
+  // 特殊物
+  const gR = has('gold') ? .06 : .028;
+  if (Math.random() < .03) later(.3, () => launch('item', rand(.25, .75) * W, { itype: 'jar' }));
+  else if (Math.random() < .028) later(.3, () => launch('item', rand(.25, .75) * W, { itype: 'ice' }));
+  else if (Math.random() < gR) later(.3, () => launch('item', rand(.25, .75) * W, { itype: 'gold' }));
+  if (!R.emberGiven && R.floorT > 14 && R.flasks < R.maxFlask && Math.random() < .25 || (!R.emberGiven && R.floorT > 26 && R.mode !== 'practice')) { R.emberGiven = true; later(.4, () => launch('item', rand(.3, .7) * W, { itype: 'ember', h: .7 })); }
+  const st = SAVE.stain;
+  if (st && R.mode === 'run' && st.floor === R.floor && !R.stainDone && R.floorT > 3 && S.t - R.stainT > 7) { R.stainT = S.t; later(.5, () => { if (!R.stainDone) launch('item', rand(.3, .7) * W, { itype: 'stain', h: .62 }); }); }
+}
+
+/* ================= 反馈:粒子 / 文字 / 光 ================= */
+function juice(x, y, col, n, spread, grav) {
+  for (let i = 0; i < n && parts.length < 420; i++) { const a = rand(0, TAU), sp = rand(.1, .85) * (spread || 1) * Math.min(W, H);
+    parts.push({ x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - H * .12, r: rand(5, 13), life: rand(.5, 1.1), age: 0, col: col, g: grav == null ? .7 : grav }); }
+}
+function addText(x, y, str, color, size, life) { texts.push({ x: x, y: y, str: str, color: color, size: size || 22, age: 0, life: life || 1 }); }
+function addFlash(x, y, r, life, str, col) { flashes.push({ x: x, y: y, r: r, life: life, age: 0, s: str == null ? 1 : str, col: col || 'rgba(255,200,120,1)' }); }
+function addRing(x, y, max, col, life, w) { rings.push({ x: x, y: y, max: max, col: col, age: 0, life: life || .5, w: w || 3 }); }
+const bolts = [];
+function addBolt(ax, ay, bx, by) { const pts = [[ax, ay]], n = 7; for (let i = 1; i < n; i++) { const t = i / n; pts.push([ax + (bx - ax) * t + rand(-18, 18), ay + (by - ay) * t + rand(-18, 18)]); } pts.push([bx, by]); bolts.push({ pts: pts, age: 0, life: .3 }); }
+const dirty = { hud: true, relics: true };
+
+/* ================= 魂 / 伤害 / 治疗 ================= */
+function soulMult() { return R.d.soulMult * R.curseMult * (1 + .5 * R.ng) * (S.lightT > 0 ? (has('sun') ? 3 : 2) : 1); }
+function gainSouls(n, x, y, raw) { n = Math.round(raw ? n : n * soulMult()); R.souls += n; R.soulsTotal += n; dirty.hud = true; return n; }
+function hurt(n, why) {
+  if (!R || S.screen !== 'play' || S.dying) return;
+  if (R.mode === 'practice') { addText(W / 2, H * .5, why + '(练习:无伤害)', '#ff8a6a', 20, 1.2); S.hurtFlash = .6; S.shake = .3; sfx('hit'); return; }
+  if (R.shield > 0) { R.shield--; addText(W / 2, H * .5, '护盾抵挡', '#9fd0ff', 26, 1); addRing(W / 2, H * .7, 200, 'rgba(120,190,255,1)', .6, 4); sfx('parry'); vib(30); dirty.hud = true; return; }
+  R.hp -= n; R.combo = 0; R.hitless = false; S.hurtFlash = 1; S.shake = .55; sfx('hit'); vib([70, 40, 110]); addText(W / 2, H * .5, why + '  -' + n, '#ff5a4a', 26, 1.2); dirty.hud = true;
+  if (R.hp <= 0) {
+    if (has('ashheart') && !R.revived) { R.revived = true; R.hp = Math.ceil(R.maxHp / 2); S.flash = 1; clearHostiles(); banner('灰烬重燃', '灰烬之心 · 你还不能倒下', 'gold', 2.2); sfx('bell'); dirty.hud = true; }
+    else die();
+  }
+}
+function clearHostiles() { for (const e of ents) if (e.kind === 'proj' || e.kind === 'bomb') { e.dead = true; juice(e.x, e.y, 'rgba(255,200,120,1)', 8, .6); } }
+function heal(n) { if (R.hp >= R.maxHp) return; R.hp = Math.min(R.maxHp, R.hp + n); sfx('heal'); addText(W / 2, H * .55, '生命 +' + n, '#ffcf8a', 24, 1.2); addFlash(W / 2, H * .8, 300, .6, .5, 'rgba(255,170,70,1)'); dirty.hud = true; }
+function drinkFlask() {
+  if (!R || S.screen !== 'play' || S.paused || R.drinking > 0 || S.dying) return;
+  if (!(S.phase === 'fight' || S.phase === 'boss' || S.phase === 'clearing')) return;
+  if (R.curse === 'seal') { pill('此层被封印:薪火瓶无法使用', 1500); return; }
+  if (R.flasks <= 0) { pill('薪火瓶已空 —— 斩开琥珀余烬可以补充', 1600); return; }
+  if (R.hp >= R.maxHp) { pill('生命已满', 900); return; }
+  R.flasks--; R.drinking = .75; dirty.hud = true; sfx('click'); vib(20);
+  pill('饮用薪火中…此刻无法挥刀', 800);
+}
+
+/* ================= 切割逻辑 ================= */
+function segCircle(ax, ay, bx, by, cx, cy, r) {
+  const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy; let t = 0;
+  if (l2 > 0) { t = ((cx - ax) * dx + (cy - ay) * dy) / l2; t = clamp(t, 0, 1); }
+  const px = ax + dx * t - cx, py = ay + dy * t - cy; return px * px + py * py <= r * r;
+}
+function canCut() { return S.screen === 'play' && !S.paused && !S.dying && R && (S.phase === 'fight' || S.phase === 'boss' || S.phase === 'clearing') && R.drinking <= 0 && !R.exh; }
+function cutSegment(ax, ay, bx, by, ang) {
+  if (!canCut()) return;
+  let idx = 0; const list = ents.slice();
+  for (const e of list) {
+    if (e.dead) continue;
+    if (segCircle(ax, ay, bx, by, e.x, e.y, e.r + R.d.bladeR)) { if (sliceEnt(e, ang, idx)) idx++; }
+    if (!R || S.dying) return;
+  }
+  if (B && !B.dead && segCircle(ax, ay, bx, by, B.x, B.y, B.r * .92)) hitBoss(ang, ax, ay, bx, by);
+  if (idx >= 3) { const bonus = gainSouls(idx * 6); addText((ax + bx) / 2, (ay + by) / 2 - 50, '一闪 ×' + idx + '  魂+' + bonus, '#ff9ae0', 26, 1.2); sfx('light'); }
+}
+function visualSlice(e, ang, col, small) {
+  const nx = -Math.sin(ang), ny = Math.cos(ang), sep = e.r * 2.2, spr = sprites[e.type];
+  if (spr && spr.flesh) {
+    const pieces = (R && has('twin') && !small) ? 2 : 1;
+    for (let k = -1; k <= 1; k += 2) for (let q = 0; q < pieces; q++)
+      halves.push({ type: e.type, r: e.r, x: e.x + nx * k * e.r * .15, y: e.y + ny * k * e.r * .15, vx: e.vx * .6 + nx * k * sep * (1 + q * .5) + (q ? rand(-40, 40) : 0), vy: e.vy * .5 + ny * k * sep - H * .05 - q * 60,
+        cut: ang, side: k, rot: 0, vrot: k * rand(1.5, 4), age: 0, sc: q ? .7 : 1 });
+  }
+  juice(e.x, e.y, col, small ? 12 : 24, 1); addFlash(e.x, e.y, e.r * 5, .35, .9, col); addRing(e.x, e.y, e.r * 2.2, col, .35, 2);
+}
+function sliceEnt(e, ang, idx, noSplash) {
+  const g = gravity(), apex = Math.abs(e.vy) < g * R.d.apexT && e.y < H * .92;
+  if (e.kind === 'fruit') {
+    if (e.elite && e.hp > 1) { e.hp--; e.hitT = .25; e.vy -= H * .2; e.vx += (Math.cos(ang) * 120); sfx('slice', 1); sfx('hit'); juice(e.x, e.y, 'rgba(200,120,255,1)', 14, .8); addFlash(e.x, e.y, e.r * 4, .3, .9, 'rgba(190,110,255,1)'); addText(e.x, e.y - e.r, '怨灵果·仍未倒下', '#d8a8ff', 16, .8); S.shake = Math.max(S.shake, .12); vib(15); return true; }
+    e.dead = true; const t = FT[e.type];
+    R.combo++; R.comboT = R.d.comboWin; R.sliced++; R.cnt++; SAVE.stats.sliced++; if (R.combo > R.maxCombo) R.maxCombo = R.combo;
+    const crit = Math.random() < R.d.crit;
+    let pts = t.base * (1 + R.d.comboGrow * Math.min(R.combo - 1, 20)); if (e.elite) pts *= 3; if (apex) pts *= 1.5; if (crit) pts *= 3;
+    pts = gainSouls(pts);
+    visualSlice(e, ang, t.col); sfx(apex ? 'perfect' : 'slice', Math.min(R.combo, 10) / 10); vib(8);
+    addText(e.x, e.y - e.r, (crit ? '暴击! ' : '') + '+' + pts, crit ? '#ffd24a' : '#f2e6c4', crit ? 30 : 22, .9);
+    if (apex) { R.perfects++; addRing(e.x, e.y, e.r * 3, 'rgba(255,225,120,1)', .5, 3); addText(e.x, e.y + e.r * 1.1, '完美斩', '#ffe28a', 16, .8); }
+    if (R.combo >= 3 && idx === 0) addText(e.x, e.y - e.r - 34, '连斩 ×' + R.combo, '#ffb060', 20, .9);
+    comboHud(true);
+    R.stam = Math.min(R.maxStam, R.stam + 3 + (has('reaper') ? 6 : 0));
+    if (e.elite && R.phaseKind !== 'x') progress(2);
+    progress(1);
+    if (R.combo > 0 && has('sun') && R.combo % 12 === 0) { S.lightT = Math.max(S.lightT, 4); sfx('light'); addText(W / 2, H * .35, '日轮 · 光明时刻', '#ffe28a', 26, 1.4); }
+    if (has('vamp')) { R.vampCnt++; if (R.vampCnt >= R.d.vampN) { R.vampCnt = 0; heal(1); } }
+    if (has('chain') && R.cnt % 5 === 0) lightning();
+    if (R.d.splash && !noSplash) {
+      addRing(e.x, e.y, R.d.splash, 'rgba(255,120,40,1)', .4, 3);
+      for (const o of ents) if (!o.dead && o.kind === 'fruit' && !(o.elite && o.hp > 1) && Math.hypot(o.x - e.x, o.y - e.y) < R.d.splash + o.r) { addBolt(e.x, e.y, o.x, o.y); sliceEnt(o, ang + .5, 99, true); }
+    }
+    return true;
+  }
+  if (e.kind === 'bomb') {
+    e.dead = true;
+    if (apex) { parryFx(e.x, e.y, '弹反!'); R.parries++; const n = gainSouls(25); addText(e.x, e.y + e.r, '+' + n, '#ffe28a', 22, 1); R.stam = R.maxStam; visualSlice(e, ang, 'rgba(255,225,130,1)', true); S.freeze = .08; return true; }
+    if (has('gold') || (has('defuse') && Math.random() < .6)) { const n = gainSouls(has('gold') ? 40 : 30); addText(e.x, e.y, '拆除 +' + n, '#ffe28a', 22, 1); sfx('gold'); juice(e.x, e.y, 'rgba(255,215,90,1)', 20, 1); addFlash(e.x, e.y, 220, .4, .9, 'rgba(255,215,90,1)'); return true; }
+    sfx('bomb'); juice(e.x, e.y, 'rgba(255,60,40,1)', 28, 1.2); addFlash(e.x, e.y, 420, .5, 1, 'rgba(255,60,40,1)'); addRing(e.x, e.y, e.r * 4, 'rgba(255,60,40,1)', .5, 4); S.flash = .5;
+    hurt(1 + (R.ng >= 2 ? 1 : 0), '暗影炸弹');
+    return false;
+  }
+  if (e.kind === 'proj') {
+    e.hp--; const p = e.t / e.dur;
+    if (e.hp > 0) { e.hitT = .2; sfx('parry'); addRing(e.x, e.y, e.r * 2, 'rgba(255,200,120,1)', .3, 3); juice(e.x, e.y, 'rgba(255,170,70,1)', 10, .7); S.shake = Math.max(S.shake, .2); S.freeze = .04; return true; }
+    e.dead = true;
+    if (p >= R.d.parryWin) {                       // 完美弹反
+      parryFx(e.x, e.y, '完美弹反!'); R.parries++; R.perfects++; S.freeze = .12;
+      const n = gainSouls(40); addText(e.x, e.y + 40, '+' + n, '#ffe28a', 22, 1); R.stam = R.maxStam;
+      if (B && !B.dead) { B.stagger = has('parry') ? 5 : 3.2; B.state = 'idle'; B.stT = 1.2; B.atk = null; damageBoss(12 * R.d.bossMult, e.x, e.y, '破防!'); addText(B.x, B.y + B.r + 20, '首领破防 · 伤害翻倍', '#ffe28a', 18, 1.6); }
+    } else { sfx('parry'); addText(e.x, e.y, '弹开', '#f2e6c4', 20, .8); gainSouls(8); if (B && !B.dead) damageBoss(3 * R.d.bossMult, e.x, e.y); juice(e.x, e.y, 'rgba(255,170,70,1)', 16, 1); addFlash(e.x, e.y, 260, .3, .9, 'rgba(255,170,70,1)'); }
+    return true;
+  }
+  if (e.kind === 'item') {
+    e.dead = true; const it = e.itype; juice(e.x, e.y, itemCol(it), 26, 1.1); addFlash(e.x, e.y, 460, .5, 1, itemCol(it)); addRing(e.x, e.y, e.r * 3, itemCol(it), .5, 3);
+    if (it === 'jar') { S.lightT = 5; sfx('light'); addText(e.x, e.y, '光明时刻!魂 ×2', '#fff0a0', 28, 1.6); S.flash = .6; }
+    else if (it === 'ice') { S.slowT = 4; sfx('ice'); addText(e.x, e.y, '冰晶 · 时间迟缓', '#a8e8ff', 26, 1.6); }
+    else if (it === 'gold') { const n = gainSouls(50 + floorN() * 10); sfx('gold'); addText(e.x, e.y, '金色幸运果 +' + n, '#ffd24a', 26, 1.5); }
+    else if (it === 'ember') { if (R.flasks < R.maxFlask) { R.flasks++; addText(e.x, e.y, '薪火瓶 +1', '#ffb060', 28, 1.5); } else { heal(1); } sfx('heal'); dirty.hud = true; }
+    else if (it === 'stain') { const st = SAVE.stain; if (st) { R.souls += st.souls; R.soulsTotal += st.souls; addText(e.x, e.y, '取回遗落的魂 +' + st.souls, '#9fd8ff', 28, 2); SAVE.stain = null; save(); } R.stainDone = true; sfx('souls'); dirty.hud = true; }
+    sfx('slice'); vib(15); return true;
+  }
+  return false;
+}
+function itemCol(it) { return it === 'jar' ? 'rgba(220,255,90,1)' : it === 'ice' ? 'rgba(130,220,255,1)' : it === 'gold' ? 'rgba(255,210,70,1)' : it === 'ember' ? 'rgba(255,130,40,1)' : 'rgba(120,190,255,1)'; }
+function parryFx(x, y, txt) {
+  sfx('parry'); vib([25, 20, 40]); addText(x, y - 30, txt, '#ffe28a', 32, 1.3); addRing(x, y, 160, 'rgba(255,230,140,1)', .55, 5); addRing(x, y, 90, 'rgba(255,255,255,1)', .35, 3);
+  addFlash(x, y, 520, .5, 1, 'rgba(255,230,160,1)'); juice(x, y, 'rgba(255,230,140,1)', 30, 1.2); S.flash = Math.max(S.flash, .35); S.shake = Math.max(S.shake, .25);
+}
+function lightning() {
+  const c = ents.filter(e => !e.dead && e.kind === 'fruit' && e.y < H * .95 && !(e.elite && e.hp > 1)); if (!c.length) return;
+  sfx('lightning'); let n = Math.min(R.d.chainN, c.length), px = W / 2, py = 0;
+  for (let i = 0; i < n; i++) { const e = c.splice(Math.floor(Math.random() * c.length), 1)[0]; addBolt(px, py, e.x, e.y); px = e.x; py = e.y; sliceEnt(e, rand(0, 3), 99, true); }
+  addFlash(W / 2, H / 2, 700, .25, .8, 'rgba(200,220,255,1)');
+}
+function comboHud(pop) { const el = $('combo'); el.textContent = R && R.combo >= 2 ? '连斩 ×' + R.combo : ''; if (pop) { el.classList.add('pop'); setTimeout(() => el.classList.remove('pop'), 80); } }
+function progress(n) {
+  if (R.mode === 'practice' && R.pBoss == null) { R.progress += n; dirty.hud = true; return; }
+  if (S.phase !== 'fight') return;
+  R.progress += n; dirty.hud = true;
+  if (R.progress >= R.quota && !isBossFloor(R.floor)) floorDone();
+}
+
+/* ================= 首领 ================= */
+function makeBoss(def) {
+  const hpScale = (1 + .6 * R.ng) * (R.mode === 'practice' ? .7 : 1);
+  B = { def: def, hp: def.hp * hpScale, max: def.hp * hpScale, x: W / 2, y: H * .3, r: W * .2, phase: 1, state: 'idle', stT: 2, hitCd: 0, invuln: 0, stagger: 0, eye: 0, t: 0, hurt: 0, atk: null, dead: false, appear: 0, ghost: 1 };
+  $('bossN').textContent = def.name; $('bossHp').style.width = '100%'; $('bossGhost').style.width = '100%';
+}
+function damageBoss(dmg, x, y, tag) {
+  if (!B || B.dead || B.invuln > 0) return;
+  if (B.stagger > 0) dmg *= 2;
+  B.hp -= dmg; B.hurt = .18; $('bossHp').style.width = Math.max(0, B.hp / B.max * 100) + '%'; $('bossGhost').style.width = Math.max(0, B.hp / B.max * 100) + '%';
+  const ph = B.hp / B.max < .3 ? 3 : B.hp / B.max < .6 ? 2 : 1;
+  if (B.hp <= 0) { bossDefeat(); return; }
+  if (ph > B.phase) { B.phase = ph; B.invuln = 2; B.state = 'idle'; B.stT = 2.2; B.atk = null; B.stagger = 0; clearHostiles(); S.flash = .8; S.shake = .6; sfx('boss'); banner(ph === 2 ? '第 二 阶 段' : '最 终 阶 段', B.def.name + ' 愤怒了', 'red', 2); queue.length = 0; }
+}
+function hitBoss(ang, ax, ay, bx, by) {
+  if (B.dead) return;
+  if (B.invuln > 0) { if (B.hitCd <= 0) { B.hitCd = .3; addText(B.x, B.y, '无敌', '#aab', 18, .6); sfx('parry'); } return; }
+  if (B.hitCd > 0) return; B.hitCd = .13;
+  const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy; let t = l2 > 0 ? clamp(((B.x - ax) * dx + (B.y - ay) * dy) / l2, 0, 1) : 0; const px = ax + dx * t, py = ay + dy * t;
+  const crit = Math.random() < R.d.crit; let dmg = 4 * R.d.bossMult * (crit ? 2.5 : 1);
+  sfx('slice', 1); sfx('hit'); vib(12); juice(px, py, B.def.col, 12, .9); addFlash(px, py, 300, .3, .9, B.def.col); S.shake = Math.max(S.shake, .1);
+  addText(px, py - 20, (crit ? '暴击 ' : '') + Math.round(dmg * (B.stagger > 0 ? 2 : 1)), crit ? '#ffd24a' : '#ffe9c8', crit ? 24 : 16, .6);
+  R.combo++; R.comboT = R.d.comboWin; if (R.combo > R.maxCombo) R.maxCombo = R.combo; comboHud(true);
+  damageBoss(dmg, px, py);
+}
+function bossAttackStart() {
+  const def = B.def, list = def.atk[B.phase]; let k = list[Math.floor(Math.random() * list.length)];
+  if (k === B.lastAtk && list.length > 1) k = list[Math.floor(Math.random() * list.length)];
+  B.lastAtk = k; B.atk = k; B.state = 'windup'; B.stT = k === 'heavy' ? 1.3 : k === 'feast' ? .5 : (1 - .1 * B.phase); sfx(k === 'feast' ? 'click' : 'windup');
+  pill(k === 'volley' ? '首领蓄力 —— 准备弹反火球!' : k === 'heavy' ? '重击将至 —— 连斩数次才能破坏!' : k === 'bombs' ? '暗影炸弹来袭,留心金色闪光' : k === 'blackout' ? '暗域降临 —— 光芒将被吞没' : '破绽!趁机攻击', 1800);
+}
+function projSpawn(tx, delay, o) {
+  o = o || {}; later(delay, () => { if (!B || B.dead) return; const dur = (o.dur || (2.0 - .15 * B.phase)) * (1 - .04 * R.ng);
+    ents.push({ kind: 'proj', x: B.x, y: B.y, sx: B.x + rand(-30, 30), sy: B.y + B.r * .3, tx: tx, ty: H - 24, t: 0, dur: dur, r0: o.r || W * .075, r: (o.r || W * .075) * .5, hp: o.hp || 1, dead: false, vx: 0, vy: 0, rot: 0, vrot: 0, age: 0, hitT: 0, heavy: !!o.hp }); sfx('fire'); });
+}
+function bossAttackFire() {
+  const k = B.atk, def = B.def, n = def.vN[B.phase];
+  if (k === 'volley') { const xs = rshuffleL(n); for (let i = 0; i < n; i++) projSpawn(W * (.12 + .76 * xs[i]), i * (.32 - .03 * B.phase)); B.stT = .9 + n * .3; }
+  else if (k === 'heavy') { projSpawn(W / 2 + rand(-60, 60), 0, { hp: 3, r: W * .13, dur: 2.9 }); B.stT = 1.8; }
+  else if (k === 'bombs') { const P = spawnParams(); for (let i = 0; i < 3 + B.phase; i++) later(i * .35, () => launch(i % 2 ? 'bomb' : 'fruit', rand(.12, .88) * W, { h: rand(.6, .85) })); B.stT = 1.6; }
+  else if (k === 'blackout') { S.darkT = 6; sfx('boss'); pill('暗域:光芒变得微弱,留意火球轨迹', 2200); projSpawn(W * .3, .3, { dur: 2.6 }); projSpawn(W * .7, 1.1, { dur: 2.6 }); B.stT = 2.2; }
+  else if (k === 'feast') { for (let i = 0; i < 7; i++) later(i * .08, () => launch('fruit', W / 2 + rand(-20, 20), { vx: (i / 6 - .5) * W * .6, h: rand(.55, .8) })); B.stT = 2.2; }
+  B.state = 'recover';
+}
+function rshuffleL(n) { const a = []; for (let i = 0; i < n; i++) a.push((i + Math.random() * .7) / n); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function updateBoss(dt) {
+  B.t += dt; B.appear = Math.min(1, B.appear + dt * .8);
+  B.x = W / 2 + Math.sin(B.t * .8) * W * .18; B.y = H * .3 + Math.sin(B.t * 1.3) * 8 - (1 - B.appear) * 120;
+  B.hitCd -= dt; B.hurt -= dt; if (B.invuln > 0) B.invuln -= dt;
+  if (B.stagger > 0) { B.stagger -= dt; B.eye = 0; if (B.stagger <= 0) pill('首领恢复了', 900); return; }
+  if (B.invuln > 0 || S.phase !== 'boss') return;
+  B.stT -= dt;
+  if (B.state === 'idle') { if (B.stT <= 0) bossAttackStart(); B.eye = Math.max(0, B.eye - dt * 2); }
+  else if (B.state === 'windup') { B.eye = Math.min(1, B.eye + dt * 1.5); if (B.stT <= 0) bossAttackFire(); }
+  else if (B.state === 'recover') { B.eye = Math.max(0, B.eye - dt * 1.2); if (B.stT <= 0) { B.state = 'idle'; B.stT = Math.max(.5, 1.9 - .4 * B.phase); } }
+}
+function bossDefeat() {
+  B.dead = true; B.hp = 0; (R.killed = R.killed || {})[B.def.id] = 1; $('bossHp').style.width = '0%'; S.phase = 'bossDead'; S.phaseT = 0; R.bosses++; SAVE.stats.bosses++;
+  clearHostiles(); queue.length = 0; S.freeze = .25; S.flash = 1; S.shake = 1; sfx('boss'); sfx('bell'); vib([100, 50, 200]);
+  for (let i = 0; i < 6; i++) later(i * .12, () => { juice(B.x + rand(-60, 60), B.y + rand(-60, 60), B.def.col, 30, 1.4, .4); addFlash(B.x, B.y, 700, .6, 1, B.def.col); addRing(B.x, B.y, W * .5 + i * 30, B.def.col, .8, 4); });
+  const n = gainSouls(B.def.soul, 0, 0); banner('猎 杀 完 成', B.def.name + ' · 魂 +' + n, 'gold', 3.2);
+  $('bossW').style.display = 'none';
+}
+
+/* ================= 刀光输入 ================= */
+function skin() { return SKINS[SAVE.meta.skin] || SKINS.ember; }
+function thr() { return S.mode === 'camera' ? Math.max(.55 * W, 190) : Math.max(.2 * W, 70); }
+function addTrailPoint(key, x, y, now, minSpeed, maxGap) {
+  let tr = trails[key]; if (!tr) tr = trails[key] = { pts: [] };
+  const pts = tr.pts; let last = pts[pts.length - 1];
+  if (last && now - last.t > (maxGap || 1e9)) { pts.length = 0; last = null; }
+  S.lantern = { x: x, y: y, t: now };
+  if (last) {
+    const dx = x - last.x, dy = y - last.y, d = Math.sqrt(dx * dx + dy * dy), dt = Math.max((now - last.t) / 1000, .004), sp = d / dt;
+    if (d > .5 && S.screen === 'play' && sp >= minSpeed && canCut()) {
+      R.idle = 0; R.stam -= d * .05 * (R.curse === 'weary' ? 1.3 : 1) * (S.mode === 'camera' ? .6 : 1);
+      if (R.stam <= 0) { R.stam = 0; if (!R.exh) { R.exh = true; sfx('exh'); pill('体力耗尽 —— 稍作喘息再挥刀', 1400); } }
+      else cutSegment(last.x, last.y, x, y, Math.atan2(dy, dx));
+    }
+  }
+  pts.push({ x: x, y: y, t: now }); if (pts.length > 26) pts.shift();
+}
+
+/* ================= 更新 ================= */
+function initAmbient() {
+  ambient.length = 0;
+  for (let i = 0; i < 42; i++) ambient.push({ k: i % 3, x: Math.random() * W, y: Math.random() * H, ph: Math.random() * 10, sp: rand(8, 26), r: rand(2, 5) });
+}
+function update(dt, now) {
+  if (S.freeze > 0) { S.freeze -= dt; dt *= .05; }
+  S.t += dt;
+  const playing = S.screen === 'play' && R && !S.paused;
+  if (playing) {
+    if (S.slowT > 0) S.slowT -= dt; if (S.lightT > 0) S.lightT -= dt; if (S.darkT > 0) S.darkT -= dt;
+  }
+  const targetTs = playing && S.slowT > 0 ? .45 : 1;
+  S.timeScale += (targetTs - S.timeScale) * Math.min(1, dt * 6);
+  S.light += ((playing && S.lightT > 0 ? 1 : 0) - S.light) * Math.min(1, dt * 3);
+  let gt = dt * S.timeScale; if (S.dying) gt *= .3;
+  for (const a of ambient) {
+    a.ph += dt;
+    if (a.k === 0) { a.x += Math.sin(a.ph * .7 + a.r) * 14 * dt; a.y += Math.cos(a.ph * .5 + a.r) * 10 * dt; }
+    else if (a.k === 1) { a.y -= a.sp * dt; a.x += Math.sin(a.ph * 1.3) * 12 * dt; if (a.y < -10) { a.y = H + 10; a.x = Math.random() * W; } }
+    else { a.x += a.sp * .4 * dt; a.y += Math.sin(a.ph) * 3 * dt; if (a.x > W + 10) a.x = -10; }
+    if (a.x < -20) a.x = W + 10; if (a.x > W + 20) a.x = -10; if (a.y > H + 20) a.y = -10;
+  }
+  if (playing) gameLogic(dt, gt, now);
+  else if (S.screen !== 'play') demoLogic(dt, gt, now);
+  if (S.screen === 'play' && S.paused) gt = 0;
+  entsUpdate(gt, dt, playing);
+  for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.age += gt; p.vy += gravity() * p.g * gt; p.x += p.vx * gt; p.y += p.vy * gt; if (p.age >= p.life) parts.splice(i, 1); }
+  for (let i = halves.length - 1; i >= 0; i--) { const h = halves[i]; h.age += gt; h.vy += gravity() * gt; h.x += h.vx * gt; h.y += h.vy * gt; h.rot += h.vrot * gt; if (h.y - h.r * 1.5 > H) halves.splice(i, 1); }
+  for (let i = texts.length - 1; i >= 0; i--) { texts[i].age += dt; if (texts[i].age > texts[i].life) texts.splice(i, 1); }
+  for (let i = flashes.length - 1; i >= 0; i--) { flashes[i].age += dt; if (flashes[i].age > flashes[i].life) flashes.splice(i, 1); }
+  for (let i = rings.length - 1; i >= 0; i--) { rings[i].age += dt; if (rings[i].age > rings[i].life) rings.splice(i, 1); }
+  for (let i = bolts.length - 1; i >= 0; i--) { bolts[i].age += dt; if (bolts[i].age > bolts[i].life) bolts.splice(i, 1); }
+  if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 1.2);
+  if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 1.5);
+  if (S.hurtFlash > 0) S.hurtFlash = Math.max(0, S.hurtFlash - dt * 1.4);
+  for (const k in trails) { const pts = trails[k].pts; while (pts.length && now - pts[0].t > 280) pts.shift(); if (!pts.length && (trails[k].ended || k.charAt(0) === 'h' || k === 'demo')) delete trails[k]; }
+}
+function gameLogic(dt, gt, now) {
+  S.phaseT += dt;
+  // 排队的出怪
+  for (let i = queue.length - 1; i >= 0; i--) { queue[i].t -= gt; if (queue[i].t <= 0) { const q = queue.splice(i, 1)[0]; q.fn(); } }
+  const ph = S.phase;
+  if (ph === 'title') { if (S.phaseT > 2) beginFight(); }
+  else if (ph === 'bossIntro') { if (B) B.appear = Math.min(1, B.appear + dt * .5); if (S.phaseT > 3.6) { S.phase = 'boss'; S.phaseT = 0; $('bossW').style.display = 'block'; B.stT = 1.6; } }
+  else if (ph === 'fight') {
+    R.floorT += gt; R.spawnT -= gt;
+    if (R.spawnT <= 0) { spawnPattern(); R.spawnT = spawnParams().interval * rand(.85, 1.3); }
+  } else if (ph === 'boss') {
+    if (B) updateBoss(gt);
+    R.spawnT -= gt; if (R.spawnT <= 0 && B && B.state !== 'windup') { R.spawnT = rand(3.2, 4.5); const k = Math.random() < .5 ? 1 : 2; for (let i = 0; i < k; i++) later(i * .12, () => launch('fruit', rand(.15, .85) * W)); }
+    if (B && B.stagger <= 0 && S.darkT <= 0 && false) {}
+  } else if (ph === 'clearing') { if (S.phaseT > 1.8) floorPanels(); }
+  else if (ph === 'bossDead') { if (B) { B.appear = Math.max(0, B.appear - dt * .4); } if (S.phaseT > 3.6) bossRewards(); }
+  else if (ph === 'dying') { if (S.phaseT > 3.2) showOver(); }
+  // 连击
+  if (R.comboT > 0) { R.comboT -= dt; if (R.comboT <= 0 && R.combo) { R.combo = 0; comboHud(false); } }
+  // 体力
+  if (!S.dying) {
+    R.idle += dt; const rate = (R.idle > .35 ? 34 : 7) * R.d.regen * (R.curse === 'weary' ? .6 : 1);
+    R.stam = Math.min(R.maxStam, R.stam + rate * dt); if (R.exh && R.stam >= 28) R.exh = false;
+  }
+  if (R.drinking > 0) { R.drinking -= dt; if (R.drinking <= 0) heal(2); }
+  if (S.dying) S.phaseT += 0;
+}
+function entsUpdate(gt, dt, playing) {
+  const g = gravity(), active = playing && (S.phase === 'fight' || S.phase === 'boss');
+  for (let i = ents.length - 1; i >= 0; i--) {
+    const e = ents[i]; e.age += gt; e.hitT -= gt;
+    if (e.dead) { ents.splice(i, 1); continue; }
+    if (e.kind === 'proj') {
+      if (!playing) { continue; }
+      e.t += gt; const p = Math.min(1, e.t / e.dur); e.x = e.sx + (e.tx - e.sx) * p; e.y = e.sy + (e.ty - e.sy) * (p * p * .35 + p * .65); e.r = e.r0 * (.5 + .5 * p); e.rot += gt * 4;
+      if (e.t >= e.dur) { e.dead = true; if (active) { juice(e.x, e.y, 'rgba(255,90,40,1)', 24, 1); addFlash(e.x, e.y, 500, .5, 1, 'rgba(255,90,40,1)'); hurt(e.heavy ? 2 : 1, '被火球击中'); } }
+      continue;
+    }
+    e.vy += g * gt; e.x += e.vx * gt; e.y += e.vy * gt; e.rot += e.vrot * gt;
+    if (e.y - e.r > H && e.vy > 0) {
+      ents.splice(i, 1);
+      if (e.elite && active && !e.demo) { juice(W / 2, H - 30, 'rgba(190,100,255,1)', 18, 1); hurt(1, '怨灵果咬了你一口'); }
+      else if (e.kind === 'fruit' && active && !e.demo && R.combo > 0 && Math.random() < .0) { }
+    } else if ((e.x < -e.r * 3 && e.vx < 0) || (e.x > W + e.r * 3 && e.vx > 0)) ents.splice(i, 1);
+  }
+}
+let demoT = 1.2;
+function demoLogic(dt, gt, now) {
+  demoT -= gt;
+  if (demoT <= 0) { demoT = rand(1.6, 2.6); const types = ['watermelon', 'orange', 'apple', 'pineapple', 'dragon', 'lemon']; launch('fruit', rand(.25, .75) * W, { type: types[Math.floor(Math.random() * types.length)], demo: true, h: rand(.45, .62) }); if (Math.random() < .5) launch('bomb', rand(.2, .8) * W, { demo: true, h: .5 }); }
+  const g = gravity();
+  for (const e of ents) if (e.demo && !e.dead && e.kind === 'fruit' && Math.abs(e.vy) < g * .1 && e.y < H * .8) {
+    e.dead = true; const a = rand(-.9, .9) + (Math.random() < .5 ? 0 : Math.PI), c = Math.cos(a), s = Math.sin(a);
+    const tr = trails.demo = { pts: [] }; for (let i = 0; i < 7; i++) { const u = (i - 3) * e.r * .75; tr.pts.push({ x: e.x + c * u, y: e.y + s * u, t: now - (7 - i) * 12 }); }
+    S.lantern = { x: e.x, y: e.y, t: now }; visualSlice(e, a, FT[e.type].col);
+  }
+}
+
+/* ================= 绘制 ================= */
+function darkAlpha() {
+  let a = S.screen === 'play' && S.phase === 'panel' ? .6 : S.screen === 'play' ? .8 : .7;
+  if (R && S.screen === 'play') { if (R.curse === 'fog') a = .93; if (S.darkT > 0) a = Math.max(a, has('lantern') ? .94 : .975); }
+  return a * (1 - S.light * .88);
+}
+function lanternR() { let r = 118 * (R ? R.d.lantern : 1); if (R && R.curse === 'fog') r *= has('lantern') ? .8 : .58; if (S.darkT > 0) r *= has('lantern') ? .7 : .5; return r; }
+function drawDark(now) {
+  const dw = dark.width, dh = dark.height, k = dw / W;
+  dctx.globalCompositeOperation = 'source-over'; dctx.globalAlpha = 1; dctx.clearRect(0, 0, dw, dh);
+  dctx.fillStyle = 'rgba(2,3,9,' + darkAlpha().toFixed(3) + ')'; dctx.fillRect(0, 0, dw, dh);
+  dctx.globalCompositeOperation = 'destination-out';
+  const hole = (x, y, r, s) => { if (s <= 0.01) return; dctx.globalAlpha = Math.min(1, s); dctx.drawImage(holeSpr, (x - r) * k, (y - r) * k, 2 * r * k, 2 * r * k); };
+  const fog = R && R.curse === 'fog' && S.screen === 'play', fs = fog ? .6 : 1;
+  const fl = .85 + .15 * Math.sin(now / 130) * Math.sin(now / 71);
+  hole(W / 2, H * .9, W * (S.phase === 'panel' ? 1.1 : .75), (S.phase === 'panel' ? .75 : .38) * fl);
+  const lr = lanternR(); let anyL = false;
+  for (const key in trails) { const pts = trails[key].pts; if (!pts.length) continue; const l = pts[pts.length - 1], age = (now - l.t) / 700; if (age < 1) { hole(l.x, l.y, lr, 1 - age * age); anyL = true; } }
+  if (S.lantern && !anyL) { const age = (now - S.lantern.t) / 2200; if (age < 1) hole(S.lantern.x, S.lantern.y, lr * .8, .7 * (1 - age)); }
+  for (const e of ents) {
+    if (e.dead || e.kind === 'bomb') continue;
+    if (e.kind === 'fruit') hole(e.x, e.y, e.r * 2.3, (e.elite ? .75 : .7) * fs);
+    else if (e.kind === 'item') hole(e.x, e.y, e.r * 4, .9); else if (e.kind === 'proj') hole(e.x, e.y, e.r * 4, 1);
+  }
+  for (const h of halves) hole(h.x, h.y, h.r * 2, .5 * fs * Math.max(0, 1 - h.age / 2));
+  if (B && !B.dead || (B && S.phase === 'bossDead')) hole(B.x, B.y, B.r * 2.2, (S.darkT > 0 ? .55 : .8) * B.appear);
+  for (const f of flashes) { const u = f.age / f.life; hole(f.x, f.y, f.r * (.4 + .6 * u), f.s * (1 - u)); }
+  dctx.globalCompositeOperation = 'source-over'; dctx.globalAlpha = 1;
+  ctx.globalAlpha = 1; ctx.drawImage(dark, 0, 0, W, H);
+}
+function drawItem(e, now) {
+  const r = e.r, t = e.age, it = e.itype;
+  ctx.save(); ctx.translate(e.x, e.y);
+  if (it === 'jar') {
+    ctx.rotate(Math.sin(t * 2) * .15);
+    const gr = ctx.createRadialGradient(0, 0, 2, 0, 0, r * 1.3); gr.addColorStop(0, 'rgba(240,255,150,.95)'); gr.addColorStop(1, 'rgba(120,200,40,.25)');
+    ctx.fillStyle = gr; rrect(-r * .62, -r * .8, r * 1.24, r * 1.7, r * .3); ctx.fill(); ctx.strokeStyle = 'rgba(230,255,210,.9)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#3a2a18'; ctx.fillRect(-r * .5, -r * 1.05, r, r * .3); ctx.fillStyle = '#fff'; for (let i = 0; i < 6; i++) { ctx.globalAlpha = .6 + .4 * Math.sin(t * 6 + i * 2); ctx.beginPath(); ctx.arc(Math.sin(t * 1.7 + i * 1.9) * r * .35, Math.cos(t * 1.3 + i * 2.3) * r * .5, 2.2, 0, TAU); ctx.fill(); }
+  } else if (it === 'ice') {
+    ctx.rotate(t * .8); ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = i * TAU / 6, rr0 = i % 2 ? r * .8 : r * 1.1; ctx.lineTo(Math.cos(a) * rr0, Math.sin(a) * rr0); } ctx.closePath();
+    const gr = ctx.createLinearGradient(-r, -r, r, r); gr.addColorStop(0, 'rgba(240,255,255,.95)'); gr.addColorStop(.5, 'rgba(120,210,255,.85)'); gr.addColorStop(1, 'rgba(40,120,220,.8)'); ctx.fillStyle = gr; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.beginPath(); for (let i = 0; i < 3; i++) { ctx.moveTo(0, 0); ctx.lineTo(Math.cos(i * 2.09) * r, Math.sin(i * 2.09) * r); } ctx.stroke();
+  } else if (it === 'gold') {
+    ctx.rotate(t * 1.2); const gr = ctx.createRadialGradient(-r * .3, -r * .3, 2, 0, 0, r); gr.addColorStop(0, '#fffbd0'); gr.addColorStop(.5, '#ffd23a'); gr.addColorStop(1, '#b07a08'); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, r * .95, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#7a5208'; ctx.fillRect(-2, -r * 1.12, 4, r * .3); ctx.fillStyle = '#fff'; ctx.globalAlpha = .6 + .4 * Math.sin(t * 8); star(0, 0, r * 1.25, r * .1);
+  } else if (it === 'ember') {
+    const fl = 1 + .08 * Math.sin(t * 14); ctx.scale(fl, fl); ctx.beginPath(); ctx.moveTo(0, -r * 1.25); ctx.bezierCurveTo(r * .35, -r * .5, r * 1.0, -r * .1, r * .85, r * .45); ctx.bezierCurveTo(r * .7, r * 1.05, -r * .7, r * 1.05, -r * .85, r * .45); ctx.bezierCurveTo(-r, -r * .1, -r * .3, -r * .5, 0, -r * 1.25);
+    const gr = ctx.createRadialGradient(0, r * .3, 2, 0, 0, r * 1.2); gr.addColorStop(0, '#fff6c0'); gr.addColorStop(.4, '#ffb030'); gr.addColorStop(1, '#c02a08'); ctx.fillStyle = gr; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,230,160,.9)'; ctx.lineWidth = 2; ctx.stroke();
+  } else {   // 魂之残影
+    ctx.globalAlpha = .85; const gr = ctx.createRadialGradient(0, 0, 2, 0, 0, r * 1.3); gr.addColorStop(0, 'rgba(255,255,255,.95)'); gr.addColorStop(.5, 'rgba(140,200,255,.7)'); gr.addColorStop(1, 'rgba(60,100,220,0)');
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, r * 1.3, 0, TAU); ctx.fill(); ctx.strokeStyle = 'rgba(200,230,255,.9)'; ctx.lineWidth = 2; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(0, 0, r * (.4 + i * .28), t * 2 + i * 2, t * 2 + i * 2 + 3); ctx.stroke(); }
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(-r * .2, -r * .1, 3, 5, 0, 0, TAU); ctx.ellipse(r * .2, -r * .1, 3, 5, 0, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+}
+function rrect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function star(x, y, R1, R2) { ctx.beginPath(); for (let i = 0; i < 8; i++) { const a = i * TAU / 8 - Math.PI / 2, rr0 = i % 2 ? R2 : R1; ctx.lineTo(x + Math.cos(a) * rr0, y + Math.sin(a) * rr0); } ctx.closePath(); ctx.fill(); }
+
+function drawBossBody(now) {
+  const b = B, r = b.r, def = b.def, sz = SZ * r / R0;
+  ctx.save(); ctx.translate(b.x, b.y); ctx.globalAlpha = b.appear; ctx.rotate(Math.sin(b.t * .7) * .05);
+  const sc = 1 + (b.hurt > 0 ? .04 : 0); ctx.scale(sc, sc);
+  ctx.drawImage(sprites[def.fruit].skin, -sz / 2, -sz / 2, sz, sz);
+  if (def.id === 'melon') {          // 头盔
+    ctx.fillStyle = '#10131c'; ctx.strokeStyle = '#4a5468'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, r * 1.06, Math.PI * 1.02, Math.PI * 1.98); ctx.lineTo(r * 1.02, -r * .08); ctx.lineTo(r * .5, r * .12); ctx.lineTo(-r * .5, r * .12); ctx.lineTo(-r * 1.02, -r * .08); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#7a1414'; ctx.beginPath(); ctx.moveTo(-r * .12, -r * 1.04); ctx.quadraticCurveTo(0, -r * 1.7, r * .35, -r * 1.3); ctx.quadraticCurveTo(r * .1, -r * 1.2, r * .12, -r * 1.04); ctx.fill();
+    ctx.fillStyle = '#05060a'; ctx.fillRect(-r * .55, -r * .28, r * 1.1, r * .2); ctx.strokeStyle = '#4a5468'; ctx.beginPath(); ctx.moveTo(0, -r * .98); ctx.lineTo(0, r * .1); ctx.stroke();
+  } else if (def.id === 'orange') {   // 女巫帽
+    ctx.fillStyle = '#1a1030'; ctx.strokeStyle = '#6a4aa0'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, -r * .62, r * 1.18, r * .24, 0, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-r * .62, -r * .68); ctx.quadraticCurveTo(-r * .2, -r * 1.5, r * .55, -r * 2.0); ctx.quadraticCurveTo(r * .25, -r * 1.3, r * .62, -r * .68); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#d4a030'; ctx.fillRect(-r * .58, -r * .82, r * 1.16, r * .12);
+    ctx.fillStyle = '#05060a'; ctx.beginPath(); ctx.ellipse(-r * .3, -r * .04, r * .17, r * .1, .3, 0, TAU); ctx.ellipse(r * .3, -r * .04, r * .17, r * .1, -.3, 0, TAU); ctx.fill();
+  } else {                            // 薪王之冠
+    ctx.fillStyle = '#18080c'; ctx.strokeStyle = '#d4a030'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-r * .85, -r * .55); for (let i = 0; i <= 6; i++) { const x = -r * .85 + i * r * .283; ctx.lineTo(x, i % 2 ? -r * .75 : -r * 1.35); } ctx.lineTo(r * .85, -r * .55); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#05060a'; ctx.beginPath(); ctx.ellipse(-r * .3, -r * .04, r * .17, r * .09, .35, 0, TAU); ctx.ellipse(r * .3, -r * .04, r * .17, r * .09, -.35, 0, TAU); ctx.fill();
+  }
+  ctx.fillStyle = '#05060a'; ctx.beginPath(); ctx.moveTo(-r * .38, r * .38); for (let i = 0; i <= 8; i++) ctx.lineTo(-r * .38 + i * r * .095, r * .38 + (i % 2 ? r * .1 : -r * .02)); ctx.lineTo(r * .38, r * .45); ctx.lineTo(-r * .38, r * .45); ctx.fill();
+  ctx.restore();
+}
+function bossEyes() {
+  const b = B, r = b.r; ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(Math.sin(b.t * .7) * .05); ctx.globalAlpha = b.appear;
+  const stag = b.stagger > 0, inten = stag ? .25 : .35 + .65 * b.eye, col = stag ? '120,190,255' : '255,70,40', isM = b.def.id === 'melon';
+  glow(-r * .3, isM ? -r * .18 : -r * .04, r * (.5 + .6 * b.eye), 'rgba(' + col + ',1)', inten);
+  glow(r * .3, isM ? -r * .18 : -r * .04, r * (.5 + .6 * b.eye), 'rgba(' + col + ',1)', inten);
+  ctx.globalAlpha = Math.min(1, inten + .2) * b.appear; ctx.fillStyle = stag ? '#d8f0ff' : '#ffd8b0';
+  const ey = isM ? -r * .18 : -r * .04; ctx.beginPath(); ctx.ellipse(-r * .3, ey, r * .13, r * .05, .3, 0, TAU); ctx.ellipse(r * .3, ey, r * .13, r * .05, -.3, 0, TAU); ctx.fill();
+  if (b.state === 'windup') { ctx.globalAlpha = b.eye * .8; glow(0, r * .3, r * (.5 + b.eye), 'rgba(255,120,40,1)', .8); }
+  if (stag) { ctx.globalAlpha = .8; ctx.strokeStyle = 'rgba(160,210,255,.9)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(0, -r * 1.25, r * .6, r * .15, 0, 0, TAU); ctx.stroke(); }
+  if (b.invuln > 0) { ctx.globalAlpha = .5 + .3 * Math.sin(S.t * 14); ctx.strokeStyle = 'rgba(255,230,160,.9)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(0, 0, r * 1.1, 0, TAU); ctx.stroke(); }
+  ctx.restore();
+}
+
+function render(now) {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  if (S.shake > 0) { const m = S.shake * 14; ctx.translate(rand(-m, m), rand(-m, m)); }
+  ctx.drawImage(getBg(floorPal()), -8, -8, W + 16, H + 16);
+  // ---- 暗处也看得见的世界 ----
+  for (const h of halves) {
+    const sz = SZ * h.r / R0 * (h.sc || 1); ctx.save(); ctx.translate(h.x, h.y); ctx.rotate(h.cut + h.rot); ctx.globalAlpha = Math.max(0, 1 - h.age / 2.6);
+    ctx.beginPath(); ctx.rect(-h.r * 2, h.side < 0 ? -h.r * 2 : 0, h.r * 4, h.r * 2); ctx.clip(); ctx.drawImage(sprites[h.type].flesh, -sz / 2, -sz / 2, sz, sz); ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+  if (B && B.appear > 0) drawBossBody(now);
+  for (const e of ents) {
+    if (e.dead || e.kind === 'item' || e.kind === 'proj') continue;
+    const z = SZ * e.r / R0; ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(e.rot);
+    ctx.drawImage(sprites[e.kind === 'bomb' ? 'bomb' : e.type].skin, -z / 2, -z / 2, z, z); ctx.restore();
+  }
+  drawDark(now);
+  // ---- 发光的东西 ----
+  ctx.globalCompositeOperation = 'lighter';
+  const fog = R && R.curse === 'fog' && S.screen === 'play';
+  for (const a of ambient) {
+    if (a.k === 0) { const bl = .35 + .65 * Math.max(0, Math.sin(a.ph * 2.2 + a.r)); glow(a.x, a.y, a.r * 3.2, 'rgba(200,255,90,1)', bl * .5); }
+    else if (a.k === 1) glow(a.x, a.y, a.r * 2.2, 'rgba(255,130,40,1)', .5 + .3 * Math.sin(a.ph * 5));
+    else glow(a.x, a.y, a.r * 1.6, 'rgba(140,170,255,1)', .22);
+  }
+  for (const e of ents) {
+    if (e.dead) continue;
+    if (e.kind === 'fruit') { glow(e.x, e.y, e.r * 2.1, e.elite ? 'rgba(190,100,255,1)' : FT[e.type].aura, (e.elite ? .5 : .32) * (fog ? .7 : 1) + (e.hitT > 0 ? .4 : 0)); }
+    else if (e.kind === 'bomb') {
+      const g = gravity(), apex = !!R && S.screen === 'play' && Math.abs(e.vy) < g * R.d.apexT && e.y < H * .92;
+      const pulse = .5 + .5 * Math.sin(e.age * 6 + e.sd);
+      ctx.strokeStyle = apex ? 'rgba(255,230,140,' + (.7 + .3 * Math.sin(now / 35)) + ')' : 'rgba(255,40,30,' + (.12 + .22 * pulse) + ')'; ctx.lineWidth = apex ? 5 : 2.5; ctx.beginPath(); ctx.arc(e.x, e.y, e.r + 2, 0, TAU); ctx.stroke();
+      glow(e.x, e.y, e.r * (apex ? 3 : 1.7), apex ? 'rgba(255,220,120,1)' : 'rgba(255,30,20,1)', apex ? .55 : .06 + .1 * pulse);
+    }
+    else if (e.kind === 'item') glow(e.x, e.y, e.r * 3.2, itemCol(e.itype), .55 + .2 * Math.sin(now / 150));
+    else if (e.kind === 'proj') {
+      const p = e.t / e.dur; ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      glow(e.tx, e.ty, 30 + 50 * p, 'rgba(255,40,30,1)', .2 + .5 * p);
+      ctx.strokeStyle = 'rgba(255,90,40,' + (.1 + .3 * p) + ')'; ctx.lineWidth = 2; ctx.setLineDash([6, 8]); ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.tx, e.ty); ctx.stroke(); ctx.setLineDash([]);
+      if (R && p >= R.d.parryWin) { ctx.strokeStyle = 'rgba(255,230,140,' + (.6 + .4 * Math.sin(now / 40)) + ')'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(e.x, e.y, e.r * 1.5, 0, TAU); ctx.stroke(); }
+      ctx.restore();
+      glow(e.x, e.y, e.r * 3.4, 'rgba(255,100,30,1)', .8); glow(e.x, e.y, e.r * 1.8, 'rgba(255,220,120,1)', .9);
+      if (e.heavy) { ctx.strokeStyle = 'rgba(255,200,120,.8)'; ctx.lineWidth = 3; for (let i = 0; i < e.hp; i++) { ctx.beginPath(); ctx.arc(e.x, e.y, e.r * (1.1 + i * .22), 0, TAU); ctx.stroke(); } }
+    }
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  for (const e of ents) if (!e.dead && e.kind === 'item') drawItem(e, now);
+  for (const e of ents) if (!e.dead && e.kind === 'proj') {
+    ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(e.rot); const gr = ctx.createRadialGradient(0, 0, 1, 0, 0, e.r); gr.addColorStop(0, '#fff6c8'); gr.addColorStop(.45, '#ffa028'); gr.addColorStop(1, '#a01800'); ctx.fillStyle = gr;
+    ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = i * TAU / 10, rr0 = i % 2 ? e.r * .78 : e.r * 1.05; ctx.lineTo(Math.cos(a) * rr0, Math.sin(a) * rr0); } ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  ctx.globalCompositeOperation = 'lighter';
+  // 怨灵果的眼睛
+  for (const e of ents) if (!e.dead && e.kind === 'fruit' && e.elite) {
+    ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(e.rot); const r = e.r; ctx.globalAlpha = .9; ctx.fillStyle = e.hp > 1 ? '#e8c0ff' : '#ff8a8a';
+    ctx.beginPath(); ctx.ellipse(-r * .3, -r * .12, r * .16, r * .08, .4, 0, TAU); ctx.ellipse(r * .3, -r * .12, r * .16, r * .08, -.4, 0, TAU); ctx.fill();
+    glow(-r * .3, -r * .12, r * .4, 'rgba(210,120,255,1)', .7); glow(r * .3, -r * .12, r * .4, 'rgba(210,120,255,1)', .7);
+    ctx.strokeStyle = '#2a0a3a'; ctx.lineWidth = 3; ctx.globalAlpha = .8; ctx.beginPath(); for (let i = 0; i <= 6; i++) ctx.lineTo(-r * .4 + i * r * .133, r * .3 + (i % 2 ? r * .1 : 0)); ctx.stroke(); ctx.restore();
+  }
+  if (B && B.appear > 0) { glow(B.x, B.y, B.r * 2.8, B.def.col, (.18 + .1 * B.eye) * B.appear); if (B.hurt > 0) glow(B.x, B.y, B.r * 1.6, 'rgba(255,255,255,1)', .5); bossEyes(); }
+  ctx.globalAlpha = 1;
+  for (const f of flashes) { const u = f.age / f.life; glow(f.x, f.y, f.r * (.3 + .4 * u), f.col, f.s * (1 - u) * .6); }
+  for (const p of parts) { const u = 1 - p.age / p.life; glow(p.x, p.y, p.r * 2.4 * (.5 + .5 * u), p.col, u * .9); }
+  for (const r of rings) { const u = r.age / r.life; ctx.strokeStyle = r.col.replace(/[\d.]+\)$/, (1 - u) + ')'); ctx.lineWidth = r.w * (1 - u * .5); ctx.beginPath(); ctx.arc(r.x, r.y, r.max * (.2 + .8 * Math.sqrt(u)), 0, TAU); ctx.stroke(); }
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const b of bolts) { const u = 1 - b.age / b.life; ctx.strokeStyle = 'rgba(160,190,255,' + u * .6 + ')'; ctx.lineWidth = 8; ctx.beginPath(); b.pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); ctx.strokeStyle = 'rgba(255,255,255,' + u + ')'; ctx.lineWidth = 2.5; ctx.stroke(); }
+  drawTrails(now);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  // 魂之光(残影位置提示 / 疲惫)
+  ctx.drawImage(vig, -4, -4, W + 8, H + 8);
+  // 文字
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  for (const t of texts) {
+    const u = t.age / t.life; ctx.globalAlpha = Math.max(0, 1 - u * u * u); ctx.font = '700 ' + t.size + 'px "Songti SC","Noto Serif CJK SC","Noto Serif SC",serif';
+    const tx = clamp(t.x, 70, W - 70), ty = t.y - u * 46; ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.strokeText(t.str, tx, ty);
+    ctx.shadowColor = t.color; ctx.shadowBlur = 10; ctx.fillStyle = t.color; ctx.fillText(t.str, tx, ty); ctx.shadowBlur = 0;
+  }
+  ctx.globalAlpha = 1; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (S.flash > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = 'rgba(255,200,120,' + S.flash * .28 + ')'; ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'source-over'; }
+  if (S.hurtFlash > 0) { const gr = ctx.createRadialGradient(W / 2, H / 2, W * .2, W / 2, H / 2, H * .75); gr.addColorStop(0, 'rgba(120,0,0,0)'); gr.addColorStop(1, 'rgba(160,10,10,' + S.hurtFlash * .55 + ')'); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H); }
+  if (S.dying) { const u = Math.min(1, S.phaseT / 1.6); ctx.fillStyle = 'rgba(0,0,0,' + u * .6 + ')'; ctx.fillRect(0, 0, W, H); }
+  if (R && S.screen === 'play' && S.slowT > 0) { ctx.fillStyle = 'rgba(90,170,255,.07)'; ctx.fillRect(0, 0, W, H); }
+}
+function drawTrails(now) {
+  const sk = skin();
+  for (const k in trails) {
+    const pts = trails[k].pts, n = pts.length; if (n < 1) continue;
+    const ex = R && S.screen === 'play' && (R.exh || R.drinking > 0), rgb = ex ? '120,120,130' : sk.rgb, core = ex ? '#aab' : sk.core;
+    for (let i = 1; i < n; i++) {
+      const a = pts[i - 1], b = pts[i], al = Math.max(0, 1 - (now - b.t) / 280), wd = (i / n) * 15 + 3;
+      ctx.strokeStyle = 'rgba(' + rgb + ',' + (al * .28).toFixed(3) + ')'; ctx.lineWidth = wd * 3.2; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.strokeStyle = 'rgba(' + rgb + ',' + (al * .7).toFixed(3) + ')'; ctx.lineWidth = wd * 1.5; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.globalAlpha = al; ctx.strokeStyle = core; ctx.lineWidth = wd * .6; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    const l = pts[n - 1]; if (now - l.t < 250) { const al = 1 - (now - l.t) / 250; glow(l.x, l.y, 36, ex ? 'rgba(120,120,130,1)' : sk.glow, al * .8); ctx.globalAlpha = al; ctx.fillStyle = core; ctx.beginPath(); ctx.arc(l.x, l.y, 5.5, 0, TAU); ctx.fill(); ctx.globalAlpha = 1; }
+  }
+}
+
+/* ================= HUD / 提示 ================= */
+let pillText = '', pillUntil = 0, pillTimer = 0;
+function setPillDom(t) { if (t === pillText) return; pillText = t; const p = $('pill'); p.textContent = t; p.style.display = t ? 'block' : 'none'; }
+function pill(t, ms) { pillTimer = t; pillUntil = performance.now() + (ms || 1500); setPillDom(t); }
+function updatePill() {
+  const now = performance.now(); if (!R || S.screen !== 'play') { setPillDom(''); return; }
+  if (now < pillUntil) return;
+  if (S.mode === 'camera') { if (S.handLoading) setPillDom('摄像头已开启,手势模型加载中…(期间可先用手指滑屏)'); else if (S.handReady && now - S.handSeenAt > 1500) setPillDom('把食指指尖伸进画面,指尖就是刀光'); else setPillDom(''); }
+  else setPillDom(S.fallbackReason ? ('⚠ ' + S.fallbackReason + ' —— 已切换为触屏模式') : '');
+}
+function toast(t, ms) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', ms || 2200); }
+function banner(t, s, cls, dur) {
+  const b = $('banner'); b.className = cls || 'gold'; $('bT').textContent = t; $('bS').textContent = s || ''; b.style.setProperty('--d', (dur || 2.4) + 's');
+  b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; b.classList.add('show');
+}
+let hudCache = {};
+function setTxt(id, v) { if (hudCache[id] !== v) { hudCache[id] = v; $(id).textContent = v; } }
+function updateHud() {
+  if (!R || S.screen !== 'play') return;
+  $('hud').style.visibility = S.phase === 'panel' ? 'hidden' : 'visible';
+  let s = '';
+  for (let i = 0; i < R.shield; i++) s += '<span class="pip shield"></span>';
+  for (let i = 0; i < R.maxHp; i++) s += '<span class="pip' + (i < R.hp ? '' : ' lost') + '"></span>';
+  if (hudCache.hp !== s) { hudCache.hp = s; $('hp').innerHTML = s; }
+  const sp = (R.stam / R.maxStam * 100).toFixed(1) + '%'; if (hudCache.st !== sp) { hudCache.st = sp; $('stam').style.width = sp; }
+  $('stamW').classList.toggle('exh', R.exh);
+  $('stamW').style.width = Math.min(230, 150 + (R.maxStam - 100) * .8) + 'px';
+  setTxt('soulsN', R.souls);
+  const practice = R.mode === 'practice', isBoss = !!B || (S.phase === 'bossIntro');
+  const fl = practice ? ('练习 · ' + (R.pBoss == null ? '无尽果园' : BOSSES[R.pBoss].name)) : ('第 ' + R.floor + ' 层 · ' + FLOORS[R.floor] + (R.mode === 'daily' ? ' · 每日' : '') + (R.ng ? ' · ' + (R.ng + 1) + '周目' : ''));
+  setTxt('floorLine', fl);
+  const ct = R.curse ? ('诅咒:' + CURSES[R.curse].n + ' · 魂 ×' + R.curseMult) : '';
+  const cEl = $('curseTag'); if (hudCache.ct !== ct) { hudCache.ct = ct; cEl.textContent = ct; cEl.style.display = ct ? 'block' : 'none'; }
+  const showProg = !isBoss && S.phase !== 'bossDead' && S.phase !== 'panel';
+  $('progW').style.display = $('progT').style.display = showProg && isFinite(R.quota) ? 'block' : 'none';
+  if (!isFinite(R.quota)) { $('progT').style.display = showProg ? 'block' : 'none'; setTxt('progT', '已斩 ' + R.progress); }
+  else { $('prog').style.width = Math.min(100, R.progress / R.quota * 100) + '%'; setTxt('progT', '净化腐果 ' + Math.min(R.progress, R.quota) + ' / ' + R.quota); }
+  setTxt('flaskN', R.flasks + '/' + R.maxFlask);
+  const fb = $('flaskBtn'); fb.classList.toggle('dis', R.flasks <= 0 || R.curse === 'seal'); fb.classList.toggle('go', R.hp < R.maxHp && R.flasks > 0 && R.curse !== 'seal');
+  if (dirty.relics) {
+    dirty.relics = false; let h = ''; const show = R.relics.slice(-8);
+    show.forEach(id => { const r = RMAP[id]; h += '<span class="rg r' + r.r + '">' + r.g + '</span>'; }); if (R.relics.length > 8) h += '<span class="rg">+' + (R.relics.length - 8) + '</span>';
+    $('relicBar').innerHTML = h;
+  }
+}
+
+/* ================= 面板系统 ================= */
+let panelLock = 0;
+function show(id, on) { $(id).classList.toggle('show', !!on); }
+function showPanel(o) {
+  $('pTitle').textContent = o.title; $('pSub').textContent = o.sub || ''; const box = $('pCards'); box.innerHTML = '';
+  (o.cards || []).forEach(c => {
+    const d = document.createElement('button'); d.type = 'button'; d.className = 'card' + (c.rar ? ' r' + c.rar : '') + (c.dis ? ' dis' : '') + (c.sold ? ' sold' : '');
+    d.innerHTML = '<div class="gl">' + (c.g || '·') + '</div><div style="flex:1"><div class="nm">' + c.n + '</div><div class="ds">' + c.d + '</div></div>' + (c.tag ? '<div class="rk">' + c.tag + '</div>' : '') + (c.price != null ? '<div class="pr">' + (c.sold ? '已售' : c.price + ' 魂') + '</div>' : '');
+    d.addEventListener('click', () => { if (performance.now() < panelLock || c.dis || c.sold) return; c.pick(d); });
+    box.appendChild(d);
+  });
+  const ft = $('pFoot'); ft.innerHTML = '';
+  (o.btns || []).forEach(b => { const e = document.createElement('button'); e.type = 'button'; e.className = 'btn alt sm' + (b.dis ? ' dis' : ''); e.textContent = b.t; e.addEventListener('click', () => { if (performance.now() < panelLock || b.dis) return; b.f(); }); ft.appendChild(e); });
+  panelLock = performance.now() + 450; show('panel', true); $('panel').scrollTop = 0;
+}
+function hidePanel() { show('panel', false); }
+function weightedPick(pool, w) { let tot = 0; pool.forEach(r => tot += w[r.r]); let q = rr() * tot; for (const r of pool) { q -= w[r.r]; if (q <= 0) return r; } return pool[0]; }
+function relicOffers(boost) {
+  let pool = RELICS.filter(r => !has(r.id) && (!r.lock || SAVE.meta.unlock[r.lock])); const w = boost ? [8, 60, 32] : [60, 32, 8], out = [];
+  for (let i = 0; i < 3 && pool.length; i++) { const r = weightedPick(pool, w); out.push(r); pool = pool.filter(x => x !== r); }
+  return out;
+}
+function synHint(id) { const out = []; SYNS.forEach(s => { if ((s.a === id && has(s.b)) || (s.b === id && has(s.a))) out.push('共鸣「' + s.n + '」:' + s.d); }); return out.join(' / '); }
+function relicPanel(boost, cb, title) {
+  const offers = relicOffers(boost);
+  if (!offers.length) { cb(); return; }
+  showPanel({ title: title || '拾取遗物', sub: boost ? '首领的余烬 · 遗物品质更高' : '在篝火旁,选择一件遗物融入你的刀', cards: offers.map(r => ({
+    g: r.g, n: r.n, d: r.d + (synHint(r.id) ? '<br><b>' + synHint(r.id) + '</b>' : ''), rar: r.r, tag: RN[r.r],
+    pick: () => { addRelic(r.id); sfx('bell'); toast('获得遗物:' + r.n); hidePanel(); cb(); } })),
+    btns: [{ t: '重掷(40 魂)', dis: R.souls < 40, f: () => { R.souls -= 40; dirty.hud = true; sfx('click'); relicPanel(boost, cb, title); } },
+           { t: '放弃,换取 40 魂', f: () => { gainSouls(40, 0, 0, true); hidePanel(); cb(); } }] });
+}
+function nodePanel(cb) {
+  const opts = ['rest'].concat(rshuffle(['shop', 'shrine', 'challenge']).slice(0, 2)), D = {
+    rest: { g: '憩', n: '篝火休憩', d: '回复 <b>2</b> 点生命,薪火瓶补满,体力回满。' },
+    shop: { g: '商', n: '流浪商人', d: '他在火光边摆开了货物,用<b>魂</b>交换补给与遗物。' },
+    shrine: { g: '龛', n: '无名神龛', d: '一场未知的奇遇——可能赐福,也可能索取代价。' },
+    challenge: { g: '暗', n: '无光回廊', d: '下一层强制<b>浓雾</b>,魂 <b>×2</b>,通关后额外获得一次稀有遗物。' } };
+  showPanel({ title: '篝火 · 选择去向', sub: '火光之外还有别的路。只能选择其中一处。', cards: opts.map(k => ({ g: D[k].g, n: D[k].n, d: D[k].d, rar: k === 'challenge' ? 1 : 0,
+    pick: () => {
+      sfx('click');
+      if (k === 'rest') { R.hp = Math.min(R.maxHp, R.hp + 2); R.flasks = R.maxFlask; R.stam = R.maxStam; sfx('heal'); toast('在篝火旁小憩 · 生命与薪火瓶已恢复'); hidePanel(); dirty.hud = true; cb(); }
+      else if (k === 'shop') shopPanel(cb); else if (k === 'shrine') shrinePanel(cb);
+      else { R.nextCurse = 'fog'; R.chal = true; toast('你踏入了无光回廊…'); hidePanel(); cb(); }
+    } })) });
+}
+function shopPanel(cb) {
+  const f = R.floor, wares = [{ id: 'heal', g: '药', n: '回复药', d: '立即回复 <b>2</b> 点生命。', p: 40 + f * 5 }];
+  const more = rshuffle([{ id: 'flask', g: '瓶', n: '空的薪火瓶', d: '薪火瓶上限 <b>+1</b> 并补满。', p: 90 + f * 8 }, { id: 'relic', g: '宝', n: '神秘遗物', d: '随机一件<b>稀有</b>遗物。', p: 130 + f * 10 },
+    { id: 'maxhp', g: '命', n: '不死的火种', d: '最大生命 <b>+1</b> 并回复 1。', p: 160 + f * 10 }, { id: 'shield', g: '盾', n: '灰烬护符', d: '下一层获得一层额外护盾。', p: 55 + f * 5 }]);
+  wares.push.apply(wares, more.slice(0, 3));
+  function draw() {
+    showPanel({ title: '流浪商人', sub: '“火快灭了…用你的魂,换点活下去的东西。”   持有:' + R.souls + ' 魂', cards: wares.map(w => ({ g: w.g, n: w.n, d: w.d, price: w.p, sold: w.sold, dis: !w.sold && R.souls < w.p, rar: w.id === 'relic' ? 1 : 0,
+      pick: () => {
+        if (R.souls < w.p) return; R.souls -= w.p; w.sold = true; sfx('gold');
+        if (w.id === 'heal') heal(2); else if (w.id === 'flask') { R.maxFlask++; R.flasks = R.maxFlask; } else if (w.id === 'maxhp') { R.maxHp++; R.hp++; }
+        else if (w.id === 'shield') R.bonusShield = (R.bonusShield || 0) + 1;
+        else if (w.id === 'relic') { const pool = RELICS.filter(r => r.r === 1 && !has(r.id) && (!r.lock || SAVE.meta.unlock[r.lock])); if (pool.length) { const r = rpick(pool); addRelic(r.id); toast('获得遗物:' + r.n); } else { R.souls += w.p; w.sold = false; toast('商人没有更多稀有货了'); } }
+        dirty.hud = true; draw();
+      } })), btns: [{ t: '离开', f: () => { hidePanel(); cb(); } }] });
+  }
+  draw();
+}
+function shrinePanel(cb) {
+  const ev = rpick([0, 1, 2]);
+  const done = (msg) => { toast(msg, 2800); hidePanel(); dirty.hud = true; cb(); };
+  const leave = { g: '离', n: '转身离开', d: '什么也不做。', pick: () => done('你没有回头') };
+  let o;
+  if (ev === 0) o = { title: '无名神龛', sub: '残破的神像向你伸出空洞的手。', cards: [
+    { g: '血', n: '献出鲜血', d: '失去 <b>1</b> 点生命,获得一件<b>稀有</b>遗物。', dis: R.hp <= 1, rar: 1, pick: () => { R.hp--; const pool = RELICS.filter(r => r.r >= 1 && !has(r.id) && (!r.lock || SAVE.meta.unlock[r.lock])); if (pool.length) { const r = rpick(pool); addRelic(r.id); done('神龛赐你 ' + r.n); } else done('神龛已无物可赐'); } },
+    { g: '祷', n: '虔诚祈祷', d: '获得 <b>80</b> 魂,但下一层将受到随机诅咒。', pick: () => { gainSouls(80, 0, 0, true); R.nextCurse = rpick(CURSE_KEYS); done('获得 80 魂 · 前路蒙上诅咒'); } }, leave] };
+  else if (ev === 1) o = { title: '受伤的旅人', sub: '一名不死人倚在石柱旁,气息微弱。', cards: [
+    { g: '救', n: '出手救治', d: '花费 <b>40</b> 魂,他回赠你一只空瓶:薪火瓶上限 <b>+1</b>。', dis: R.souls < 40, pick: () => { R.souls -= 40; R.maxFlask++; R.flasks = R.maxFlask; done('薪火瓶上限 +1'); } },
+    { g: '夺', n: '趁机抢夺', d: '获得 <b>100</b> 魂,但下一层变成<b>雷区</b>。', pick: () => { gainSouls(100, 0, 0, true); R.nextCurse = 'mines'; done('获得 100 魂 · 良心难安'); } }, leave] };
+  else o = { title: '古老的宝箱', sub: '箱子在火光下微微起伏…像是在呼吸。', cards: [
+    { g: '箱', n: '打开它', d: '一半几率获得<b>稀有遗物</b>,一半几率是<b>拟态</b>:受到 2 点伤害(至少留 1 点)。', rar: 1, pick: () => {
+      if (Math.random() < .5) { const pool = RELICS.filter(r => r.r >= 1 && !has(r.id) && (!r.lock || SAVE.meta.unlock[r.lock])); if (pool.length) { const r = rpick(pool); addRelic(r.id); done('宝箱里是 ' + r.n); } else done('箱子空空如也'); }
+      else { R.hp = Math.max(1, R.hp - 2); S.hurtFlash = 1; sfx('hit'); done('是拟态怪!生命 -2'); } } }, leave] };
+  showPanel(o);
+}
+function pathPanel(cb) {
+  const c = rpick(CURSE_KEYS), cu = CURSES[c];
+  showPanel({ title: '前路分歧', sub: '下一层有两条路。越危险,魂越多。', cards: [
+    { g: '平', n: '平静之路', d: '没有诅咒。魂 ×1。', pick: () => { R.nextCurse = null; hidePanel(); cb(); } },
+    { g: cu.g, n: cu.n + '之路', d: cu.d + '。魂 <b>×' + cu.m + '</b>。', rar: 1, tag: '诅咒', pick: () => { R.nextCurse = c; hidePanel(); cb(); } }] });
+}
+
+/* ================= 楼层流程 ================= */
+function startFloor(n) {
+  R.floor = n; R.progress = 0; R.floorT = 0; R.emberGiven = false; R.hitless = true; R.stainT = -99;
+  const boss = isBossFloor(n) && R.mode !== 'practice';
+  ents.length = halves.length = parts.length = queue.length = 0; B = null; S.lightT = S.slowT = S.darkT = 0;
+  R.curse = null; R.curseMult = 1;
+  if (!boss) {
+    if (R.nextCurse) { R.curse = R.nextCurse; R.curseMult = R.chal ? 2 : CURSES[R.curse].m; R.chalFloor = !!R.chal; }
+    else if (R.mode === 'daily') { R.curse = R.dailyCurse; R.curseMult = 1.5; }
+  }
+  R.nextCurse = null; R.chal = false; if (boss) R.chalFloor = false;
+  R.shield = (has('shield') ? 1 : 0) + (R.bonusShield || 0); R.bonusShield = 0;
+  R.quota = 12 + 4 * n; R.spawnT = 1.4; R.stam = R.maxStam; R.exh = false; R.combo = 0; comboHud(false);
+  S.phaseT = 0; hudCache = {}; dirty.hud = dirty.relics = true; $('bossW').style.display = 'none';
+  if (boss) {
+    const def = bossFor(n); makeBoss(def); S.phase = 'bossIntro'; banner(def.name, def.sub, 'boss', 3.4); sfx('boss'); vib([80, 40, 80]); S.shake = .4;
+  } else {
+    S.phase = 'title'; banner('第 ' + n + ' 层', FLOORS[n] + (R.curse ? ' · 诅咒:' + CURSES[R.curse].n : ''), R.curse ? 'red' : 'gold', 2.2); sfx('bell');
+  }
+  save();
+}
+function beginFight() { S.phase = 'fight'; S.phaseT = 0; R.spawnT = .3; }
+function floorDone() {
+  S.phase = 'clearing'; S.phaseT = 0; queue.length = 0; R.cleared++;
+  const bonus = gainSouls(10 + R.floor * 6, 0, 0, true); banner('篝 火 已 点 燃', '魂 +' + bonus, 'gold', 2.2); sfx('bell'); S.flash = .5; vib([40, 30, 80]);
+  for (const e of ents) if (e.kind === 'bomb' || e.elite) e.dead = true;
+  addFlash(W / 2, H * .88, 900, 1, 1, 'rgba(255,170,70,1)'); if (R.hitless) R.hitlessFloors = (R.hitlessFloors || 0) + 1; checkAch();
+}
+function floorPanels() { afterFloor(false); }
+function afterFloor(boss) {
+  S.phase = 'panel'; S.phaseT = 0; setPillDom(''); $('bossW').style.display = 'none'; B = null; ents.length = 0; dirty.hud = true; S.slowT = S.darkT = 0;
+  const extra = R.chalFloor; R.chalFloor = false;
+  const flow = () => relicPanel(boss || extra, () => nodePanel(() => nextFloor()), boss ? '首领的遗物' : extra ? '无光回廊的奖赏' : '拾取遗物');
+  flow();
+}
+function nextFloor() {
+  const n = R.floor + 1;
+  if (R.nextCurse || isBossFloor(n) || R.mode === 'daily') startFloor(n);
+  else pathPanel(() => startFloor(n));
+}
+function bossRewards() {
+  if (R.mode === 'practice') { S.phase = 'panel'; B = null; ents.length = 0; practicePanel('首领已被猎杀'); return; }
+  R.bosses = R.bosses; checkAch();
+  if (R.floor >= 7) { finishRun(true); return; }
+  afterFloor(true);
+}
+function practicePanel(sub) {
+  S.phase = 'panel'; S.screen = 'play'; $('bossW').style.display = 'none'; B = null; ents.length = 0; clearWorld(); setPillDom('');
+  const cards = [{ g: '果', n: '无尽果园', d: '没有首领,没有终点。练习刀法、连斩与弹反。' }].concat(BOSSES.map((b, i) => ({ g: ['瓜', '橙', '龙'][i], n: b.name, d: '练习挑战首领(伤害不会致命)。', rar: i + 1 > 2 ? 2 : i, tag: '首领' })));
+  showPanel({ title: '练习场', sub: sub || '选择一个对手。练习中不会死亡,也不获得灰烬。', cards: cards.map((c, i) => { c.pick = () => { hidePanel(); startPractice(i - 1); }; return c; }),
+    btns: [{ t: '返回主菜单', f: () => { hidePanel(); goHome(); } }] });
+}
+function startPractice(t) {
+  if (R.mode !== 'practice') return; clearWorld(); R.pBoss = t < 0 ? null : t; R.progress = 0; R.quota = Infinity; R.hp = R.maxHp; R.stam = R.maxStam; R.curse = null; R.curseMult = 1; R.floorT = 0; R.spawnT = 1; R.emberGiven = true; hudCache = {};
+  R.shield = has('shield') ? 1 : 0; S.phaseT = 0; $('bossW').style.display = 'none'; dirty.hud = true;
+  if (t < 0) { S.phase = 'title'; R.floor = 3; banner('无尽果园', '练习 · 随心所欲地挥刀', 'gold', 2); }
+  else { const def = BOSSES[t]; R.floor = def.floor; makeBoss(def); S.phase = 'bossIntro'; banner(def.name, def.sub, 'boss', 3.4); sfx('boss'); }
+}
+
+/* ================= 结算 ================= */
+function die() {
+  if (S.dying) return; S.dying = true; S.phase = 'dying'; S.phaseT = 0; setPillDom(''); $('bossW').style.display = 'none'; queue.length = 0;
+  banner('你 已 死 亡', '', 'red', 3.2); sfx('death'); vib([300, 80, 300]); S.shake = .8; $('combo').textContent = '';
+}
+const ACH = [
+  { id: 'boss1', n: '初猎', d: '击败腐朽的西瓜骑士', f: () => R.killed && R.killed.melon }, { id: 'boss2', n: '女巫陨落', d: '击败灼眼的橙之女巫', f: () => R.killed && R.killed.orange },
+  { id: 'boss3', n: '薪王终结', d: '通关一轮', f: () => R.killed && R.killed.dragon }, { id: 'parry10', n: '弹反熟手', d: '一轮中弹反 10 次', f: () => R.parries >= 10 },
+  { id: 'combo25', n: '连斩达人', d: '达成 25 连斩', f: () => R.maxCombo >= 25 }, { id: 'rich', n: '富甲一方', d: '同时携带 800 魂', f: () => R.souls >= 800 },
+  { id: 'relic8', n: '收藏家', d: '一轮中集齐 8 件遗物', f: () => R.relics.length >= 8 }, { id: 'hitless', n: '无伤之层', d: '无伤通过 3 个楼层', f: () => (R.hitlessFloors || 0) >= 3 },
+  { id: 'ng1', n: '轮回不止', d: '开启 2 周目', f: () => SAVE.ngMax >= 1 }
+];
+function checkAch() { if (!R || R.mode === 'practice') return; ACH.forEach(a => { if (!SAVE.ach[a.id] && a.f()) { SAVE.ach[a.id] = 1; toast('成就解锁:' + a.n + ' —— ' + a.d, 3000); } }); }
+function finishRun(victory) {
+  if (S.screen !== 'play') return; S.phase = 'ended'; S.screen = 'over'; S.dying = false; $('hud').classList.remove('show'); setPillDom('');
+  let ash = 0, rec = '', stainTxt = '';
+  if (R.mode !== 'practice') {
+    SAVE.stats.runs++; if (victory) SAVE.stats.wins++; else SAVE.stats.deaths++;
+    const reached = victory ? 8 : R.floor;
+    ash = R.cleared * 10 + R.bosses * 40 + Math.floor(R.soulsTotal / 25) + (victory ? 150 + R.ng * 50 : 0) + (victory ? Math.floor(R.souls / 20) : 0);
+    if (victory && R.mode === 'run' && R.ng >= SAVE.ngMax) { SAVE.ngMax = R.ng + 1; }
+    if (victory) R.killed = R.killed || {};
+    checkAch();
+    const b = R.mode === 'daily' ? SAVE.best.daily : SAVE.best.run;
+    if (R.mode === 'daily' && b.key !== String(R.seed)) { b.key = String(R.seed); b.floor = 0; b.souls = 0; }
+    if (reached > b.floor || (reached === b.floor && R.soulsTotal > b.souls)) rec = '新的纪录!'; b.floor = Math.max(b.floor, reached); b.souls = Math.max(b.souls, R.soulsTotal);
+    SAVE.ashes += ash;
+    if (!victory && R.mode === 'run' && R.souls > 0) { SAVE.stain = { floor: R.floor, souls: R.souls }; stainTxt = '<br><b>' + R.souls + '</b> 魂遗落在第 ' + R.floor + ' 层,下一轮在那里斩开「魂之残影」即可取回'; }
+  } else { if (R.soulsTotal > SAVE.best.practice.souls) { SAVE.best.practice.souls = R.soulsTotal; rec = '练习纪录'; } }
+  save();
+  const t = $('overTitle'); t.textContent = victory ? '轮回圆满' : (R.mode === 'practice' ? '练习结束' : '魂已遗落'); t.className = victory ? 'gold' : ''; void t.offsetWidth; t.classList.add('in');
+  $('overRank').textContent = '称号 · ' + titleFor(R.soulsTotal); $('finalScore').textContent = R.soulsTotal; $('newRec').textContent = rec;
+  $('overInfo').innerHTML = (R.mode === 'practice' ? '' : '抵达 <b>' + (victory ? '薪王殿' : '第 ' + R.floor + ' 层') + '</b> · 击败首领 <b>' + R.bosses + '</b><br>') +
+    '切开水果 <b>' + R.sliced + '</b> · 最高连斩 <b>×' + R.maxCombo + '</b> · 弹反 <b>' + R.parries + '</b><br>遗物 <b>' + R.relics.length + '</b> 件' + (R.mode === 'practice' ? '' : ' · 获得灰烬 <b>' + ash + '</b>') + stainTxt +
+    (victory ? '<br>' + (R.mode === 'run' ? '已开启 <b>' + (SAVE.ngMax + 1) + ' 周目</b>,敌人将更强大' : '') : '');
+  $('againBtn').textContent = victory ? '再入轮回' : '重返轮回'; show('over', true); hudCache = {};
+}
+function showOver() { finishRun(false); }
+
+/* ================= 菜单 / 营地 / 流程入口 ================= */
+function goHome() {
+  S.screen = 'menu'; S.phase = 'none'; S.paused = false; S.dying = false; R && (R.drinking = 0); ['over', 'panel', 'pause', 'camp', 'ctl', 'how'].forEach(i => show(i, false)); show('menu', true); $('hud').classList.remove('show'); $('banner').classList.remove('show');
+  clearWorld(); setPillDom(''); $('bossW').style.display = 'none'; refreshMenu(); R = null; S.light = 0;
+}
+function refreshMenu() {
+  const br = SAVE.best.run, bd = SAVE.best.daily, k = String(dateKey()); let t = '';
+  t += br.floor ? '轮回最深:' + (br.floor >= 8 ? '通关' : '第 ' + br.floor + ' 层') + ' · 最高魂 ' + br.souls : '尚未踏入轮回';
+  t += (bd.key === k && bd.floor ? '<br>今日挑战:' + (bd.floor >= 8 ? '通关' : '第 ' + bd.floor + ' 层') + ' · 魂 ' + bd.souls : '');
+  t += '<br>灰烬 ' + SAVE.ashes + (SAVE.ngMax ? ' · 已开启 ' + (SAVE.ngMax + 1) + ' 周目' : '') + (SAVE.stain ? ' · 第 ' + SAVE.stain.floor + ' 层遗落着 ' + SAVE.stain.souls + ' 魂' : '');
+  $('menuBest').innerHTML = t; const d = new Date(); $('mDaily').textContent = '每日挑战 ' + (d.getMonth() + 1) + '/' + d.getDate();
+}
+function openCtl(mode, opt) { S.pendingMode = mode; S.pendingOpt = opt; $('ctlMsg').textContent = ''; ctlToken++; $('ctlCam').disabled = false; show('menu', false); hidePanel(); show('ctl', true); }
+let ctlToken = 0;
+function launchPending() {
+  show('ctl', false); show('menu', false); show('over', false); initAudio(); initAmbient();
+  const mode = S.pendingMode, opt = S.pendingOpt || {}; newRun(mode, opt); S.screen = 'play'; S.paused = false; S.dying = false; S.light = 0; $('hud').classList.add('show'); hudCache = {}; dirty.hud = dirty.relics = true;
+  if (mode === 'practice') practicePanel(); else startFloor(1);
+  requestWake(); setMuted(S.muted);
+}
+function startWithCamera() {
+  const tok = ++ctlToken; $('ctlCam').disabled = true; $('ctlMsg').textContent = '正在请求摄像头…请在弹窗里点「允许」(随时可点下面的按钮改用触屏)'; initAudio();
+  let settled = false;
+  const fail = err => { if (settled || tok !== ctlToken) return; settled = true; S.mode = 'touch'; S.fallbackReason = camErrorText(err); $('ctlMsg').textContent = '⚠ ' + S.fallbackReason + '。已为你切换为触屏模式,马上开始…'; setTimeout(() => { if (tok === ctlToken && S.screen !== 'play') launchPending(); }, 1100); };
+  const to = setTimeout(() => fail({ name: 'Timeout', message: '请求超时' }), 15000);
+  openCamera().then(() => { if (settled || tok !== ctlToken) return; settled = true; clearTimeout(to); S.mode = 'camera'; S.fallbackReason = ''; $('ctlMsg').textContent = ''; loadHandModel(); launchPending(); }).catch(err => { clearTimeout(to); fail(err); });
+}
+function startTouch() { ctlToken++; S.mode = 'touch'; S.fallbackReason = ''; launchPending(); }
+function ngPanel() {
+  if (!SAVE.ngMax) { openCtl('run', { ng: 0 }); return; }
+  const cards = []; for (let i = 0; i <= SAVE.ngMax; i++) cards.push({ g: String(i + 1), n: (i + 1) + ' 周目', d: i === 0 ? '初次轮回。' : '敌人更快更强,魂 ×' + (1 + .5 * i) + ',首领生命 ×' + (1 + .6 * i).toFixed(1) + '。', rar: Math.min(2, i), pick: () => { hidePanel(); openCtl('run', { ng: i }); } });
+  showPanel({ title: '选择周目', sub: '击败薪王后,轮回将以更艰难的形式重来。', cards: cards.reverse(), btns: [{ t: '返回', f: () => { hidePanel(); show('menu', true); } }] }); show('menu', false);
+}
+const HOW = ['夜里一片漆黑,只有<b>光</b>能看清一切:刀光扫过的地方会被照亮,水果自带微光,<b>暗影炸弹</b>几乎看不见,只有一圈淡淡的红边。',
+  '滑动手指(或隔空挥动食指)斩开水果。斩够数量即可<b>点燃篝火</b>,在篝火旁挑选遗物、休息、交易,然后继续下潜。第 3、6、7 层有<b>首领</b>。',
+  '<b>体力条</b>:挥刀消耗体力,耗尽后会暂时无法挥刀,停手片刻即可恢复。', '<b>生命</b>(火焰):斩中炸弹、被火球击中、被怨灵果咬到都会受伤。点左下角<b>薪火瓶</b>回复生命,饮用时无法挥刀;斩开琥珀余烬可补充薪火瓶。',
+  '<b>弹反</b>:炸弹出现<b>金色闪光</b>时斩中即可化解;首领的火球飞到近处(出现金圈)时斩开,可完美弹反并使首领破防。水果在最高点被斩有「完美」加成。',
+  '特殊物:萤火虫罐(光明时刻,魂×2)、冰晶(时间迟缓)、金色幸运果、琥珀余烬。',
+  '<b>死亡</b>会丢掉携带的魂,它们会留在你倒下的那一层——下一轮到那一层斩开「魂之残影」即可取回。灰烬可在<b>篝火营地</b>永久强化。'];
+function openCamp() {
+  show('menu', false); show('over', false); show('camp', true); S.screen = S.screen === 'play' ? 'play' : 'camp'; renderCamp();
+}
+const UPG = [
+  { k: 'hp', n: '坚韧之躯', g: '躯', d: '初始最大生命 +1', max: 3, cost: [60, 120, 200] }, { k: 'flask', n: '薪火之瓶', g: '瓶', d: '初始薪火瓶 +1', max: 2, cost: [80, 160] },
+  { k: 'stam', n: '绵长呼吸', g: '息', d: '体力上限 +15,回复 +10%', max: 3, cost: [50, 100, 150] }, { k: 'soul', n: '魂之吸引', g: '魂', d: '魂获取 +10%', max: 3, cost: [60, 120, 180] },
+  { k: 'gift', n: '出发的馈赠', g: '礼', d: '开局赠送遗物:1 级随机普通,2 级再加随机稀有', max: 2, cost: [100, 220] }];
+const UNL = { chain: 80, vamp: 100, gold: 180, sun: 200, ashheart: 200 };
+function renderCamp() {
+  const box = $('campList'); box.innerHTML = ''; $('campAsh').textContent = '灰烬 ' + SAVE.ashes + (SAVE.ngMax ? ' · 最高 ' + (SAVE.ngMax + 1) + ' 周目' : '');
+  const sect = t => { const d = document.createElement('div'); d.className = 'sect'; d.textContent = t; box.appendChild(d); };
+  const row = (g, n, d, btn, dis, on, f) => { const r = document.createElement('div'); r.className = 'row'; r.innerHTML = '<div class="gl">' + g + '</div><div class="tx"><b>' + n + '</b><br>' + d + '</div>'; const b = document.createElement('button'); b.type = 'button'; b.className = 'bt' + (dis ? ' dis' : '') + (on ? ' on' : ''); b.textContent = btn; b.addEventListener('click', () => { if (!dis) f(); }); r.appendChild(b); box.appendChild(r); };
+  sect('永久强化');
+  UPG.forEach(u => { const lv = SAVE.meta[u.k], maxed = lv >= u.max, c = u.cost[lv]; row(u.g, u.n + ' ' + lv + '/' + u.max, u.d, maxed ? '已满' : c + ' 灰烬', maxed || SAVE.ashes < c, maxed, () => { SAVE.ashes -= c; SAVE.meta[u.k]++; save(); sfx('gold'); renderCamp(); }); });
+  sect('遗物解锁(解锁后才会在轮回中出现)');
+  RELICS.filter(r => r.lock).forEach(r => { const own = SAVE.meta.unlock[r.lock], c = UNL[r.lock]; row(r.g, r.n + ' · ' + RN[r.r], r.d, own ? '已解锁' : c + ' 灰烬', own || SAVE.ashes < c, own, () => { SAVE.ashes -= c; SAVE.meta.unlock[r.lock] = 1; save(); sfx('gold'); renderCamp(); }); });
+  sect('刀光');
+  for (const k in SKINS) { const s = SKINS[k], own = SAVE.meta.skinOwn[k], sel = SAVE.meta.skin === k; row('刃', s.n + '之光', own ? '已拥有' : '购买后可使用', sel ? '使用中' : own ? '装备' : s.cost + ' 灰烬', sel || (!own && SAVE.ashes < s.cost), sel, () => { if (!own) { SAVE.ashes -= s.cost; SAVE.meta.skinOwn[k] = 1; } SAVE.meta.skin = k; save(); sfx('gold'); renderCamp(); }); }
+  sect('成就 ' + ACH.filter(a => SAVE.ach[a.id]).length + '/' + ACH.length);
+  const al = document.createElement('div'); al.style.cssText = 'font-size:12.5px;line-height:1.8;max-width:340px;text-align:left;opacity:.9';
+  al.innerHTML = ACH.map(a => '<span style="color:' + (SAVE.ach[a.id] ? '#e8c872' : '#667') + '">' + (SAVE.ach[a.id] ? '◆ ' : '◇ ') + a.n + ' —— ' + a.d + '</span>').join('<br>'); box.appendChild(al);
+}
+
+let wakeLock = null;
+function requestWake() { try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => wakeLock = l).catch(() => {}); } catch (e) {} }
+function pauseGame(on) {
+  if (S.screen !== 'play' || !R || S.dying) return; if (on && (S.phase === 'panel')) return;
+  S.paused = on; show('pause', on);
+  if (on) {
+    let h = '当前遗物(' + R.relics.length + '):<br>'; if (!R.relics.length) h += '<span style="opacity:.6">暂无</span>'; R.relics.forEach(id => { const r = RMAP[id]; h += '<b style="color:#e8c872">[' + r.g + '] ' + r.n + '</b> ' + r.d.replace(/<[^>]+>/g, '') + '<br>'; });
+    SYNS.forEach(s => { if (synOn(s.a, s.b)) h += '<b style="color:#9fd0ff">共鸣「' + s.n + '」</b> ' + s.d + '<br>'; });
+    h += '<br>魂 ' + R.souls + ' · 生命 ' + R.hp + '/' + R.maxHp + ' · 轮回种子 #' + R.seed; $('pauseInfo').innerHTML = h; $('pQuit').textContent = R.mode === 'practice' ? '结束练习' : '放弃轮回'; quitArm = false;
+  }
+}
+let quitArm = false;
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(true); else if (S.screen === 'play') requestWake(); });
+
+/* ================= 输入 ================= */
+cv.addEventListener('pointerdown', e => {
+  try { cv.setPointerCapture(e.pointerId); } catch (err) {} delete trails['p' + e.pointerId];
+  if (S.screen === 'play') addTrailPoint('p' + e.pointerId, e.clientX, e.clientY, e.timeStamp || performance.now(), 1e9);
+  else S.lantern = { x: e.clientX, y: e.clientY, t: performance.now() };
+  initAudio(); e.preventDefault();
+});
+cv.addEventListener('pointermove', e => {
+  const key = 'p' + e.pointerId; if (!trails[key] || (e.pointerType === 'mouse' && e.buttons === 0)) return;
+  const evs = (e.getCoalescedEvents && e.getCoalescedEvents()) || [e]; const th = Math.max(.2 * W, 70);
+  for (let i = 0; i < (evs.length || 1); i++) { const q = evs[i] || e; addTrailPoint(key, q.clientX, q.clientY, q.timeStamp || performance.now(), th); }
+  e.preventDefault();
+});
+const endPointer = e => { const tr = trails['p' + e.pointerId]; if (tr) tr.ended = true; };
+cv.addEventListener('pointerup', endPointer); cv.addEventListener('pointercancel', endPointer);
+['gesturestart', 'dblclick', 'contextmenu'].forEach(n => document.addEventListener(n, e => e.preventDefault()));
+document.addEventListener('touchmove', e => { if (e.target === cv) e.preventDefault(); }, { passive: false });
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('button'); if (b) { initAudio(); sfx('click'); } }, true);
+
+/* ================= 摄像头 & MediaPipe ================= */
+const MP_VERSION = '0.10.14';
+const MP_BASES = ['https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + MP_VERSION, 'https://unpkg.com/@mediapipe/tasks-vision@' + MP_VERSION];
+const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
+let handLandmarker = null, lastVideoTime = -1, lastTs = 0, detectErrors = 0;
+function camErrorText(err) {
+  if (!window.isSecureContext || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return '当前页面不是 HTTPS 安全环境(或浏览器不支持摄像头)';
+  switch (err && err.name) {
+    case 'NotAllowedError': case 'SecurityError': case 'PermissionDeniedError': return '摄像头权限被拒绝(或被系统/浏览器限制)';
+    case 'NotFoundError': case 'DevicesNotFoundError': case 'OverconstrainedError': return '没有找到可用的摄像头';
+    case 'NotReadableError': case 'TrackStartError': return '摄像头正被其他应用占用,或无法启动';
+    case 'AbortError': return '摄像头启动被中断'; case 'Timeout': return '摄像头请求超时(可能被系统弹窗挡住)';
+    default: return '摄像头无法使用' + (err && err.message ? '(' + err.message + ')' : '');
+  }
+}
+function openCamera() {
+  if (S.stream && S.stream.active && cam.srcObject) return Promise.resolve();
+  if (!window.isSecureContext || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return Promise.reject({ name: 'InsecureContext' });
+  const first = { video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false };
+  return navigator.mediaDevices.getUserMedia(first).catch(err => { if (err && (err.name === 'OverconstrainedError' || err.name === 'NotFoundError')) return navigator.mediaDevices.getUserMedia({ video: true, audio: false }); throw err; })
+    .then(stream => { S.stream = stream; cam.srcObject = stream; cam.muted = true; cam.setAttribute('playsinline', ''); cam.playsInline = true; const p = cam.play(); return (p && p.then ? p : Promise.resolve()).then(() => cam.classList.add('on')); });
+}
+function loadHandModel() {
+  if (S.handReady || S.handLoading) return; S.handLoading = true; let bi = 0;
+  function tryBase() {
+    const base = MP_BASES[bi];
+    return import(base + '/vision_bundle.mjs').then(mod => mod.FilesetResolver.forVisionTasks(base + '/wasm').then(fileset => {
+      const create = d => mod.HandLandmarker.createFromOptions(fileset, { baseOptions: { modelAssetPath: MODEL_URL, delegate: d }, runningMode: 'VIDEO', numHands: 2, minHandDetectionConfidence: .5, minHandPresenceConfidence: .5, minTrackingConfidence: .5 });
+      if (/[?&]cpu\b/.test(location.search)) return create('CPU'); return create('GPU').catch(() => create('CPU'));
+    })).catch(err => { if (++bi < MP_BASES.length) return tryBase(); throw err; });
+  }
+  tryBase().then(hl => { handLandmarker = hl; S.handReady = true; S.handLoading = false; }).catch(err => { S.handLoading = false; S.mode = 'touch'; S.fallbackReason = '手势模型加载失败(请检查网络),可继续用手指滑屏'; cam.classList.remove('on'); pill('⚠ ' + S.fallbackReason, 4000); });
+}
+function mapLandmark(lm) { return { x: clamp((1 - (lm.x - .08) / .84) * W, -20, W + 20), y: clamp((lm.y - .1) / .8 * H, -20, H + 20) }; }
+const smooth = {};
+function detectHands(now) {
+  if (!handLandmarker || S.mode !== 'camera' || cam.readyState < 2 || !cam.videoWidth || S.screen !== 'play') return;
+  if (cam.currentTime === lastVideoTime) return; lastVideoTime = cam.currentTime; const ts = Math.max(now, lastTs + 1); lastTs = ts; let res;
+  try { res = handLandmarker.detectForVideo(cam, ts); detectErrors = 0; } catch (err) { if (++detectErrors > 8) { S.mode = 'touch'; S.fallbackReason = '手势识别出错,已切换为触屏模式'; cam.classList.remove('on'); } return; }
+  const seen = {};
+  if (res && res.landmarks) for (let i = 0; i < res.landmarks.length; i++) {
+    const tip = res.landmarks[i][8]; if (!tip) continue; const p = mapLandmark(tip), key = 'h' + i, sm = smooth[key];
+    if (sm && now - sm.t < 300) { p.x = sm.x + (p.x - sm.x) * .7; p.y = sm.y + (p.y - sm.y) * .7; } smooth[key] = { x: p.x, y: p.y, t: now }; seen[key] = 1; S.handSeenAt = now; addTrailPoint(key, p.x, p.y, now, thr(), 300);
+  }
+  for (const k in smooth) if (!seen[k] && now - smooth[k].t > 300) delete smooth[k];
+}
+
+/* ================= 按钮绑定 ================= */
+$('mRun').addEventListener('click', ngPanel);
+$('mDaily').addEventListener('click', () => openCtl('daily', {}));
+$('mPractice').addEventListener('click', () => openCtl('practice', {}));
+$('mCamp').addEventListener('click', openCamp);
+$('mHow').addEventListener('click', () => { $('howTxt').innerHTML = HOW.map((t, i) => '<p style="margin:0 0 9px">' + (i + 1) + '. ' + t + '</p>').join(''); show('menu', false); show('how', true); });
+$('howBack').addEventListener('click', () => { show('how', false); show('menu', true); });
+$('ctlCam').addEventListener('click', startWithCamera); $('ctlTouch').addEventListener('click', startTouch);
+$('ctlBack').addEventListener('click', () => { ctlToken++; show('ctl', false); show('menu', true); });
+$('campBack').addEventListener('click', () => { show('camp', false); goHome(); });
+$('againBtn').addEventListener('click', () => { show('over', false); const m = R ? R.mode : 'run', o = { ng: R ? R.ng : 0 }; S.pendingMode = m; S.pendingOpt = o; launchPending(); });
+$('campBtn2').addEventListener('click', () => { show('over', false); S.screen = 'camp'; openCamp(); });
+$('homeBtn').addEventListener('click', goHome);
+$('pauseBtn').addEventListener('click', () => pauseGame(true));
+$('pResume').addEventListener('click', () => pauseGame(false));
+$('pSound').addEventListener('click', () => setMuted(!S.muted)); $('muteBtn').addEventListener('click', () => setMuted(!S.muted));
+$('pQuit').addEventListener('click', () => { if (!quitArm) { quitArm = true; $('pQuit').textContent = '再点一次确认'; return; } S.paused = false; show('pause', false); finishRun(false); });
+$('flaskBtn').addEventListener('click', drinkFlask);
+
+/* ================= 主循环 ================= */
+let lastFrame = 0, hudTick = 0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = lastFrame ? Math.min((now - lastFrame) / 1000, .05) : .016; lastFrame = now;
+  detectHands(now);
+  if (!S.paused) update(dt, now);
+  render(now);
+  if (S.screen === 'play' && (dirty.hud || now - hudTick > 90)) { hudTick = now; dirty.hud = false; updateHud(); updatePill(); }
+}
+resize(); window.addEventListener('resize', resize); window.addEventListener('orientationchange', () => setTimeout(resize, 200));
+initAmbient(); setMuted(S.muted); refreshMenu();
+requestAnimationFrame(frame);
+window.__sf = { S: S, get R() { return R; }, get B() { return B; }, ents: ents, SAVE: SAVE, launch: launch, addTrailPoint: addTrailPoint, startFloor: startFloor, floorDone: floorDone, pendingStart: (m, o) => { S.pendingMode = m; S.pendingOpt = o || {}; S.mode = 'touch'; launchPending(); }, addRelic: addRelic, hurt: hurt, sliceEnt: sliceEnt, die: die, drinkFlask: drinkFlask, gainSouls: gainSouls, bossDefeat: bossDefeat, save: save, dirty: dirty, shopPanel: shopPanel, shrinePanel: shrinePanel, pathPanel: pathPanel, relicPanel: relicPanel, nodePanel: nodePanel, nextFloor: nextFloor };
+})();
+</script>
+</body>
+</html>
